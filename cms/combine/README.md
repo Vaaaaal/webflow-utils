@@ -2,7 +2,7 @@
 
 Fusionne deux (ou plusieurs) Collection Lists Webflow en une seule liste, avec **tri** et **limite** optionnels. Tout est piloté par des **data attributes** posés dans le Designer — aucune config JS à modifier.
 
-> Cas d'usage typiques : combiner une collection "featured" avec une collection "standard" sur une homepage, mixer deux types de contenu (articles + études de cas) dans un même flux, fusionner plusieurs sources tout en gardant un tri chronologique global.
+> Cas d'usage typiques : combiner une collection "featured" avec une collection "standard" sur une homepage, mixer deux types de contenu (articles + études de cas) dans un même flux, fusionner deux sources de produits, ou afficher côte à côte des éléments issus de plusieurs collections tout en gardant un tri chronologique global.
 
 ---
 
@@ -67,7 +67,7 @@ Dans chacune des **deux collections** à combiner, assure-toi d'avoir un champ c
 
 Sélectionner le **Collection List Wrapper** de la première collection → **Settings (D)** → **Custom Attributes** :
 
-- `data-combine` = `cabins`
+- `data-combine` = `articles`
 - `data-combine-sort-type` = `date`
 - `data-combine-sort-dir` = `desc`
 - `data-combine-limit` = `6`
@@ -76,7 +76,7 @@ Sélectionner le **Collection List Wrapper** de la première collection → **Se
 
 Sélectionner le **Collection List Wrapper** de la seconde collection → Custom Attributes :
 
-- `data-combine-source` = `cabins` *(exactement le même nom)*
+- `data-combine-source` = `articles` *(exactement le même nom)*
 
 ### 4. Poser `data-sort-value` sur les items des deux collections
 
@@ -96,9 +96,9 @@ Le custom code ne s'exécute que sur le site **publié** (pas en Preview).
 ## 📝 Exemple HTML complet
 
 ```html
-<!-- Liste cible : Cabins premium -->
+<!-- Liste cible : première collection -->
 <div class="w-dyn-list"
-     data-combine="cabins"
+     data-combine="articles"
      data-combine-sort-type="date"
      data-combine-sort-dir="desc"
      data-combine-limit="6">
@@ -109,8 +109,8 @@ Le custom code ne s'exécute que sur le site **publié** (pas en Preview).
   </div>
 </div>
 
-<!-- Liste source : Cabins standard -->
-<div class="w-dyn-list" data-combine-source="cabins">
+<!-- Liste source : seconde collection -->
+<div class="w-dyn-list" data-combine-source="articles">
   <div role="list" class="w-dyn-items">
     <div role="listitem" class="w-dyn-item" data-sort-value="2025-04-02">
       <!-- contenu de l'item -->
