@@ -139,6 +139,6 @@ MIT — utilisation libre, personnelle ou commerciale, modification autorisée. 
 
 ## 👤 Auteur
 
-[Valentin Cassus](https://vaaal.fr) — Webflow developer & designer, Bordeaux.
+[Valentin Cassus](https://vaaal.fr) — Webflow developer, Digidop & Freelance.
 
 Suggestions et retours bienvenus via les [Issues](https://github.com/Vaaaaal/webflow-utils/issues).
