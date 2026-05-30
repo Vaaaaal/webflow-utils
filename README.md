@@ -1,6 +1,6 @@
 # webflow-utils
 
-Collection de scripts JavaScript prêts à l'emploi pour étendre les capacités de Webflow. Chaque module est **autonome**, **piloté par data attributes** (pas de config JS à modifier), et **conçu pour cohabiter avec d'autres scripts** sur la même page.
+Collection de scripts JavaScript prêts à l'emploi pour étendre les capacités de Webflow. Chaque module est **autonome**, **piloté par custom attributes** (pas de config JS à modifier), et **conçu pour cohabiter avec d'autres scripts** sur la même page.
 
 Les modules sont organisés par **catégorie** (CMS, UI, forms, etc.) pour rester lisibles à mesure que le repo grandit.
 
@@ -54,8 +54,8 @@ Télécharger le fichier, l'héberger sur ton propre CDN (Cloudflare, S3, etc.) 
 Tous les modules de ce repo suivent les mêmes principes :
 
 - **IIFE strict** : chaque script est enveloppé dans `(function () { 'use strict'; … })();` pour éviter la pollution du scope global et les collisions avec d'autres scripts (Webflow IX2, Finsweet, GSAP, etc.).
-- **Pilotage par data attributes** : aucune configuration JS à modifier. Tout se règle dans le Designer via les Custom Attributes.
-- **Préfixe de namespace** : les attributs principaux d'un module sont préfixés par son nom (`data-combine`, `data-combine-source`, etc.) pour éviter les collisions entre modules.
+- **Pilotage par custom attributes** : aucune configuration JS à modifier. Tout se règle dans le Designer via les Custom Attributes.
+- **Préfixe `wu-` + namespace par module** : tous les attributs commencent par `wu-` (pour "webflow-utils"), suivi du nom du module. Exemple pour le module `combine` : `wu-combine`, `wu-combine-source`, `wu-combine-sort-value`, etc. Ce préfixe sans `data-` suit la convention de l'écosystème Webflow (Finsweet `fs-`) et des libs modernes (Alpine `x-`, HTMX `hx-`, Vue `v-`). Note : techniquement signalé comme invalide par le validator HTML W3C, sans impact réel sur les navigateurs, le SEO ou l'accessibilité.
 - **Démarrage adaptatif** : `DOMContentLoaded` si la page charge encore, exécution immédiate sinon.
 - **Échecs silencieux** : si un attribut manque ou si un élément n'est pas trouvé, le script s'arrête proprement sans planter la page.
 - **Compatible Webflow natif** : ne casse ni les Collection Lists, ni les Interactions IX2, ni la pagination native (sauf mention contraire dans le README du module).
@@ -67,6 +67,7 @@ Tous les modules de ce repo suivent les mêmes principes :
 ```
 webflow-utils/
 ├── README.md                       ← ce fichier (index global)
+├── LICENSE                         ← MIT
 ├── cms/                            ← catégorie : manipulation CMS
 │   ├── README.md                   ← (à venir) index de la catégorie
 │   └── combine/
@@ -105,7 +106,7 @@ Pour rester cohérent avec l'existant :
 
 1. Identifier la **catégorie** (créer le dossier si elle n'existe pas).
 2. Créer un sous-dossier `nom-du-module/` dans la catégorie.
-3. Y placer `nom-du-module.js` (même nom que le dossier) qui respecte les conventions ci-dessus.
+3. Y placer `nom-du-module.js` (même nom que le dossier) qui respecte les conventions ci-dessus. Tous les attributs du module doivent être préfixés par `wu-nom-du-module-` (ex. `wu-combine`, `wu-combine-limit`).
 4. Y placer `README.md` documentant :
    - Description courte
    - Installation (lien jsDelivr inclus, avec le chemin complet `catégorie/module/module.js`)
@@ -125,7 +126,7 @@ Si un module ne fonctionne pas :
 
 1. **Vérifier que le site est publié** — le custom code Webflow ne s'exécute pas en mode Preview du Designer.
 2. **Ouvrir la console** (F12) — chercher une erreur JavaScript.
-3. **Inspecter les data attributes** sur l'élément concerné — vérifier qu'ils sont bien présents et orthographiés correctement (sensible à la casse).
+3. **Inspecter les custom attributes** sur l'élément concerné — vérifier qu'ils sont bien présents et orthographiés correctement (sensible à la casse).
 4. **Vérifier l'ordre des scripts** — si le module dépend d'une lib externe (GSAP, jQuery), elle doit être chargée avant.
 5. Consulter le README du module pour les checks spécifiques.
 
@@ -133,7 +134,7 @@ Si un module ne fonctionne pas :
 
 ## 📄 Licence
 
-MIT — utilisation libre, personnelle ou commerciale, modification autorisée. Aucune garantie.
+[MIT](./LICENSE) — utilisation libre, personnelle ou commerciale, modification autorisée. Aucune garantie.
 
 ---
 
