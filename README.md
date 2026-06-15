@@ -14,6 +14,12 @@ Les modules sont organisés par **catégorie** (CMS, UI, forms, etc.) pour reste
 |---|---|---|
 | [`cms/combine`](./cms/combine) | Fusionne deux Collection Lists Webflow en une seule, avec tri et limite optionnels. | [README](./cms/combine/README.md) |
 
+### Rich Text
+
+| Module | Description | Doc |
+|---|---|---|
+| [`rich-text/list-variants`](./rich-text/list-variants) | Transforme les listes d'un Rich Text en variantes stylées (checkmarks, flèches, étoiles) via un marqueur textuel. | [README](./rich-text/list-variants/README.md) |
+
 > D'autres catégories et modules seront ajoutés au fil des besoins.
 
 ---
@@ -95,6 +101,7 @@ webflow-utils/
 | `seo/` | Schema.org, meta, breadcrumbs |
 | `integrations/` | Tiers (Cal.com, Brevo, HubSpot) |
 | `utils/` | Helpers génériques (lazyload, copy-to-clipboard) |
+| `rich-text/` | Helpers Rich Text Webflow (variantes de listes, injection de CTA, etc.) |
 
 Les catégories sont créées à la demande : pas besoin de toutes les avoir d'avance.
 
