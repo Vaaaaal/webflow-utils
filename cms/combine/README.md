@@ -145,6 +145,18 @@ Le script traite chaque combo indépendamment, sans interférence.
 
 ---
 
+## 🔄 Contenu injecté dynamiquement (CMS Load, modals, AJAX)
+
+Le script tourne à `DOMContentLoaded` et traite tout ce qui est présent dans le DOM à ce moment-là. Pour des combos injectés après coup (modal AJAX, contenu lazy-loadé), relance le script :
+
+```js
+window.WU.combine.init();
+```
+
+⚠️ Attention : à la différence de `list-variants`, le module `combine` **n'est pas idempotent** — les listes sources déjà supprimées du DOM ne peuvent pas être re-traitées. Cette ré-init est utile uniquement quand de **nouveaux** combos (cibles + sources) apparaissent dans le DOM après chargement initial.
+
+---
+
 ## ⚙️ Comportement
 
 | Situation | Résultat |
@@ -182,3 +194,4 @@ Le script traite chaque combo indépendamment, sans interférence.
 ## 📄 Changelog
 
 - **v1.0.0** — Version initiale : fusion, tri (date/number/string), limite, support multi-combos. Attributs préfixés `wu-combine-`.
+- **v1.1.0** — Expose `init()` sur `window.WU.combine` pour ré-init après injection dynamique.
