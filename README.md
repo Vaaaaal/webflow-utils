@@ -65,6 +65,7 @@ Tous les modules de ce repo suivent les mêmes principes :
 - **Démarrage adaptatif** : `DOMContentLoaded` si la page charge encore, exécution immédiate sinon.
 - **Échecs silencieux** : si un attribut manque ou si un élément n'est pas trouvé, le script s'arrête proprement sans planter la page.
 - **Compatible Webflow natif** : ne casse ni les Collection Lists, ni les Interactions IX2, ni la pagination native (sauf mention contraire dans le README du module).
+- **Namespace global `window.WU`** : chaque module expose au minimum sa fonction `init()` sur `window.WU.{nomDuModule}` pour permettre une ré-init après injection dynamique de contenu (CMS Load, modals, AJAX). Le namespace `WU` matche le préfixe d'attribut `wu-`.
 
 ---
 
@@ -113,7 +114,7 @@ Pour rester cohérent avec l'existant :
 
 1. Identifier la **catégorie** (créer le dossier si elle n'existe pas).
 2. Créer un sous-dossier `nom-du-module/` dans la catégorie.
-3. Y placer `nom-du-module.js` (même nom que le dossier) qui respecte les conventions ci-dessus. Tous les attributs du module doivent être préfixés par `wu-nom-du-module-` (ex. `wu-combine`, `wu-combine-limit`).
+3. Y placer `nom-du-module.js` (même nom que le dossier) qui respecte les conventions ci-dessus. Tous les attributs du module doivent être préfixés par `wu-nom-du-module-` (ex. `wu-combine`, `wu-combine-limit`). Le module doit exposer sa fonction `init()` sur `window.WU.{nomDuModule}` en fin d'IIFE.
 4. Y placer `README.md` documentant :
    - Description courte
    - Installation (lien jsDelivr inclus, avec le chemin complet `catégorie/module/module.js`)
