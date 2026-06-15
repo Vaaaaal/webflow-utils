@@ -105,4 +105,9 @@
   } else {
     init();
   }
+
+  // Expose init() pour le contenu injecté dynamiquement
+  // (CMS Load, modals, AJAX, tabs avec contenu lazy…)
+  window.WU = window.WU || {};
+  window.WU.combine = { init };
 })();
