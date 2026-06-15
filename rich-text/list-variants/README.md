@@ -167,6 +167,35 @@ La regex **doit** contenir exactement **un groupe de capture** : le nom de la va
 
 ---
 
+## 🔄 Contenu injecté dynamiquement (CMS Load, modals, AJAX)
+
+Le script tourne à `DOMContentLoaded` et traite tout ce qui est présent dans le DOM à ce moment-là. Pour du contenu injecté **après** (pagination Finsweet CMS Load, modal qui charge un Rich Text en AJAX, tab dont le contenu est lazy-loadé…), il faut relancer le script.
+
+Le module expose `init()` sur `window.WU.listVariants` pour ça :
+
+```js
+// Exemple avec Finsweet CMS Load
+window.fsAttributes = window.fsAttributes || [];
+window.fsAttributes.push([
+  'cmsload',
+  (listInstances) => {
+    listInstances[0].on('renderitems', () => {
+      window.WU.listVariants.init();
+    });
+  },
+]);
+
+// Ou plus simplement, après n'importe quelle injection AJAX
+fetch('/api/content').then(/* ... */).then(() => {
+  document.querySelector('.modal-body').innerHTML = newHtml;
+  window.WU.listVariants.init();
+});
+```
+
+Grâce à l'idempotence (attribut `wu-list-variants-applied`), relancer `init()` n'a **aucun effet** sur les listes déjà traitées. Seules les nouvelles listes sont transformées. C'est sans risque, tu peux l'appeler aussi souvent que nécessaire.
+
+---
+
 ## ⚙️ Comportement
 
 | Situation | Résultat |
@@ -175,14 +204,13 @@ La regex **doit** contenir exactement **un groupe de capture** : le nom de la va
 | Marqueur reconnu | `is-{variant}` ajouté sur le `<ul>`/`<ol>`, marqueur retiré du texte |
 | Marqueur dans une liste imbriquée | Traité aussi (toutes les `<ul>`/`<ol>` du scope sont scannées) |
 | Marqueur sur du texte formaté (`**// check**`) | Le marqueur est retiré proprement, le formatage du reste du texte est préservé |
-| Script appelé deux fois sur la même page | Idempotent — les listes déjà traitées (`wu-list-variants-applied` présent) sont ignorées |
+| `init()` appelé plusieurs fois | Idempotent — les listes déjà traitées (`wu-list-variants-applied` présent) sont ignorées |
 | Pattern regex invalide | Fallback silencieux sur la regex par défaut |
 
 ---
 
 ## ⚠️ Limitations
 
-- **Contenu CMS dynamique (pagination, modals, AJAX)** : le script tourne à `DOMContentLoaded`. Pour du contenu injecté après coup, il faudra exposer une fonction `init()` au global (non fourni par défaut pour rester aligné sur les autres modules `webflow-utils`).
 - **Marqueur visible dans le Webflow Editor** : le rédacteur voit `// check` dans l'éditeur, il est retiré seulement côté front. Bien documenter la convention pour éviter la confusion.
 - **SEO / accessibilité du marqueur** : le marqueur reste présent dans le HTML servi (il est retiré au runtime par JS). Si un crawler n'exécute pas le JS, il verra `// check` dans le texte. Impact mineur en pratique (Google exécute le JS), mais à connaître.
 - **Le premier item ne doit pas commencer par du contenu non-textuel** (image, embed) avant le marqueur — le marqueur doit être dans le tout premier nœud texte de la liste.
@@ -198,11 +226,12 @@ La regex **doit** contenir exactement **un groupe de capture** : le nom de la va
 4. La règle CSS `.w-richtext ul.is-check` est-elle bien chargée ? Inspecter dans la console.
 5. Le `<ul>` reçoit-il bien la classe `is-check` après chargement ? Si oui, le script s'exécute bien — le problème est CSS.
 6. L'attribut `wu-list-variants-applied="check"` est-il posé sur le `<ul>` ? Idem, confirmation que le script a tourné.
-7. Le site est-il publié ? Le custom code ne tourne pas en Preview.
-8. Console (F12) : une erreur JavaScript ?
+7. Contenu dynamique non traité ? Voir [Contenu injecté dynamiquement](#-contenu-injecté-dynamiquement-cms-load-modals-ajax) — il faut appeler `window.WU.listVariants.init()` après l'injection.
+8. Le site est-il publié ? Le custom code ne tourne pas en Preview.
+9. Console (F12) : une erreur JavaScript ?
 
 ---
 
 ## 📄 Changelog
 
-- **v1.0.0** — Version initiale : transformation par marqueur, scope par attribut, marqueur custom via regex, stripping robuste sur formatage inline, idempotence.
+- **v1.0.0** — Version initiale : transformation par marqueur, scope par attribut, marqueur custom via regex, stripping robuste sur formatage inline, idempotence, expose `init()` sur `window.WU.listVariants` pour ré-init après injection dynamique.
