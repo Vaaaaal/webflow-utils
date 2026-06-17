@@ -19,6 +19,7 @@ Les modules sont organisés par **catégorie** (CMS, UI, forms, etc.) pour reste
 | Module | Description | Doc |
 |---|---|---|
 | [`rich-text/list-variants`](./rich-text/list-variants) | Transforme les listes d'un Rich Text en variantes stylées (checkmarks, flèches, étoiles) via un marqueur textuel. | [README](./rich-text/list-variants/README.md) |
+| [`rich-text/blockquote-author`](./rich-text/blockquote-author) | Transforme les blockquotes d'un Rich Text en `<figure>` + `<figcaption>` pour citer un auteur, via un séparateur textuel. | [README](./rich-text/blockquote-author/README.md) |
 
 > D'autres catégories et modules seront ajoutés au fil des besoins.
 
