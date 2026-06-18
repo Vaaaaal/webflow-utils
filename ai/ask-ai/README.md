@@ -75,7 +75,7 @@ Tous les attributs du module sont préfixés par `wu-ask-ai` pour éviter les co
 | `{url}` | `location.href` | **Ajouté automatiquement** à la fin du prompt s'il n'est pas dans le template |
 | `{title}` | `document.title` | Remplacé par une chaîne vide |
 | `{site}` | `wu-ask-ai-site` → hostname sans `www.` | La **ligne** contenant `{site}` est retirée du prompt |
-| `{lang}` | `<html lang>` | Remplacé par « la langue de la page » |
+| `{lang}` | `<html lang>`, converti en nom lisible (`en` → « English ») | Remplacé par « la langue de la page » |
 
 > 💡 `{url}` est garanti : même si un template l'oublie, l'URL est ajoutée en fin de prompt (un message `console.info` le signale, sans bloquer).
 
@@ -210,6 +210,7 @@ Grâce à l'idempotence (attribut `wu-ask-ai-applied`), relancer `init()` n'a **
 | Template sans `{url}` | URL ajoutée automatiquement en fin de prompt (`console.info`) |
 | `wu-ask-ai-site` absent partout | Hostname sans `www.` (ex. `orisha.com`) |
 | `{site}` sans valeur résolue (cas limite) | La ligne contenant `{site}` est retirée du prompt |
+| `<html lang>` présent | `{lang}` = nom de la langue dans sa propre langue (`en` → « English », `es` → « español ») |
 | `<html lang>` absent | `{lang}` remplacé par « la langue de la page » |
 | `init()` appelé plusieurs fois | Idempotent — les éléments déjà traités (`wu-ask-ai-applied`) sont ignorés |
 
@@ -244,4 +245,5 @@ Grâce à l'idempotence (attribut `wu-ask-ai-applied`), relancer `init()` n'a **
 
 ## 📄 Changelog
 
+- **v1.0.1** — `{lang}` : conversion du code `<html lang>` en nom de langue lisible via `Intl.DisplayNames` (`en` → « English »), au lieu d'injecter le code brut. Fallback sur le code brut si la conversion échoue.
 - **v1.0.0** — Version initiale : raccourcis vers 5 providers (ChatGPT, Perplexity, Claude, Gemini, Grok), prompt par défaut de résumé / analyse SEO, templates custom nommés via `wu-ask-ai-template` / `wu-ask-ai-use`, placeholders `{url}` / `{title}` / `{site}` / `{lang}`, ajout automatique de `{url}` si absent, nom de site hérité via `closest` avec fallback hostname, support `<a>` et éléments cliquables, idempotence via `wu-ask-ai-applied`, expose `init()` sur `window.WU.askAi`.
