@@ -21,6 +21,12 @@ Les modules sont organisés par **catégorie** (CMS, UI, forms, etc.) pour reste
 | [`rich-text/list-variants`](./rich-text/list-variants) | Transforme les listes d'un Rich Text en variantes stylées (checkmarks, flèches, étoiles) via un marqueur textuel. | [README](./rich-text/list-variants/README.md) |
 | [`rich-text/blockquote-author`](./rich-text/blockquote-author) | Transforme les blockquotes d'un Rich Text en `<figure>` + `<figcaption>` pour citer un auteur, via un séparateur textuel. | [README](./rich-text/blockquote-author/README.md) |
 
+### AI
+
+| Module | Description | Doc |
+|---|---|---|
+| [`ai/ask-ai`](./ai/ask-ai) | Transforme des liens/boutons en raccourcis vers une IA (ChatGPT, Claude, Perplexity, Gemini, Grok) avec un prompt pré-formé pour résumer ou analyser la page courante. | [README](./ai/ask-ai/README.md) |
+
 > D'autres catégories et modules seront ajoutés au fil des besoins.
 
 ---
@@ -76,13 +82,18 @@ Tous les modules de ce repo suivent les mêmes principes :
 webflow-utils/
 ├── README.md                       ← ce fichier (index global)
 ├── LICENSE                         ← MIT
-├── cms/                            ← catégorie : manipulation CMS
-│   ├── README.md                   ← (à venir) index de la catégorie
-│   └── combine/
-│       ├── combine.js              ← le script
+├── ai/                             ← catégorie : outillage IA / GEO
+│   └── ask-ai/
+│       ├── ask-ai.js               ← le script
 │       └── README.md               ← doc complète du module
-├── ui/                             ← catégorie : composants d'interface (à venir)
-├── forms/                          ← catégorie : helpers de formulaire (à venir)
+├── cms/                            ← catégorie : manipulation CMS
+│   ├── README.md
+│   └── combine/
+│       ├── combine.js
+│       └── README.md
+├── rich-text/                      ← catégorie : helpers Rich Text
+│   ├── list-variants/
+│   └── blockquote-author/
 └── …
 ```
 
@@ -104,6 +115,7 @@ webflow-utils/
 | `integrations/` | Tiers (Cal.com, Brevo, HubSpot) |
 | `utils/` | Helpers génériques (lazyload, copy-to-clipboard) |
 | `rich-text/` | Helpers Rich Text Webflow (variantes de listes, injection de CTA, etc.) |
+| `ai/` | Outillage IA / GEO (raccourcis prompts, assistants, génération) |
 
 Les catégories sont créées à la demande : pas besoin de toutes les avoir d'avance.
 
