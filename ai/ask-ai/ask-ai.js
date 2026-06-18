@@ -163,12 +163,23 @@
   }
 
   /**
-   * Langue depuis <html lang>. Fallback : 'la langue de la page'
-   * (formule neutre, évite d'injecter une valeur vide dans une instruction).
+   * Langue depuis <html lang>, convertie en nom lisible dans sa propre langue
+   * via Intl.DisplayNames (ex. "en" → "English", "es" → "español").
+   * Fallbacks en cascade :
+   *   - pas de lang        → "la langue de la page"
+   *   - conversion KO      → le code brut (ex. "en")
    */
   function resolveLang() {
-    const lang = document.documentElement.getAttribute('lang');
-    return (lang && lang.trim()) || 'la langue de la page';
+    const code = document.documentElement.getAttribute('lang');
+    if (!code || !code.trim()) return 'la langue de la page';
+
+    const clean = code.trim();
+    try {
+      const name = new Intl.DisplayNames([clean], { type: 'language' }).of(clean);
+      return name || clean;
+    } catch (err) {
+      return clean; // code invalide ou Intl indisponible → code brut
+    }
   }
 
   // Normalise le texte d'un template : trim global + suppression des espaces
