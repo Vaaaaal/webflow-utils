@@ -27,7 +27,7 @@ Copier le contenu de [`ask-ai.js`](./ask-ai.js) entre des balises `<script>…</
 - **Lien** : tout élément portant l'attribut `wu-ask-ai` dont la valeur est une clé de provider (`chatgpt`, `claude`…). Un `<a>` reçoit un `href` ; tout autre élément (bouton, div) reçoit un listener de clic. Au clic, l'IA s'ouvre dans un nouvel onglet avec le prompt encodé dans l'URL.
 - **Provider** : l'IA cible. La liste est figée dans le script (infra), pas configurable par attribut : `chatgpt`, `perplexity`, `claude`, `gemini`, `grok`.
 - **Prompt** : le texte envoyé à l'IA. Par défaut, un prompt de résumé / analyse SEO baked-in. Surchargeable par un **template nommé**.
-- **Template** : un élément **caché** contenant un prompt custom, identifié par un nom (`wu-ask-ai-template="article"`). Un ou plusieurs liens le ciblent par ce nom via `wu-ask-ai-use="article"`. Plusieurs liens (un par IA) partagent ainsi le même prompt sans le dupliquer.
+- **Template** : un élément **caché** contenant un prompt custom, identifié par un nom (`wu-ask-ai-template="article"`). Un ou plusieurs liens le ciblent par ce nom via `wu-ask-ai-use="article"`. Plusieurs liens (un par IA) partagent ainsi le même prompt sans le dupliquer. Les sauts de ligne du template sont préservés (`<br>` comme blocs). **Privilégier un bloc de texte simple** (cf. Limitations).
 - **Placeholders** : variables remplacées au runtime dans le prompt — `{url}`, `{title}`, `{site}`, `{lang}`.
 
 ---
@@ -105,10 +105,10 @@ Si tu ne le poses pas, le module utilise le hostname (sans `www.`) — ex. `oris
 
 Si le prompt par défaut ne convient pas :
 
-1. Ajouter un bloc de texte (un simple Div ou Text Block), **pas un Rich Text**.
+1. Ajouter un bloc de texte (un simple Div ou Text Block) — **recommandé**, pas un Rich Text.
 2. Le masquer : style `display: none` (ou la classe d'utilité de masquage de ton projet).
 3. Y poser l'attribut `wu-ask-ai-template` = `article` (nom au choix).
-4. Écrire le prompt dans le bloc, en utilisant les placeholders voulus.
+4. Écrire le prompt dans le bloc, en utilisant les placeholders voulus. Les sauts de ligne sont préservés (`Shift+Enter` / `<br>`).
 5. Sur chaque lien concerné, poser `wu-ask-ai-use` = `article`.
 
 ### 4. Publier et tester
@@ -222,7 +222,7 @@ Grâce à l'idempotence (attribut `wu-ask-ai-applied`), relancer `init()` n'a **
 - **Longueur d'URL** : le prompt est encodé dans l'URL. Les prompts très longs (ou enrichis de beaucoup de contenu) peuvent dépasser les limites pratiques d'URL (~2000–8000 caractères selon le navigateur et la destination) et être tronqués. Garder les templates concis.
 - **Connexion requise côté IA** : l'utilisateur doit être connecté à l'outil cible pour que le prompt se lance ; sinon il atterrit sur une page de login et le prompt peut être perdu.
 - **Le contenu de la page n'est pas envoyé** : seule l'URL est transmise. C'est à l'IA de fetch la page (ce que toutes ne font pas de façon fiable). Le module ne scrape pas et n'envoie pas le texte de l'article.
-- **Template = texte brut** : le prompt custom est lu via `textContent`. Utiliser un bloc de texte simple masqué, **pas un Rich Text** (les sauts de ligne et espaces parasites du Rich Text peuvent dégrader le prompt). Le formatage HTML est ignoré.
+- **Template = recommander un bloc de texte simple** : le prompt custom est lu en préservant les sauts de ligne (`<br>` et blocs `<p>`/`<div>` deviennent des retours à la ligne), mais le formatage inline (gras, liens, listes stylées) est ignoré. Un **bloc de texte simple masqué** reste le choix le plus prévisible. Un Rich Text fonctionne aussi, mais peut injecter des structures inattendues (listes, imbrications) qui compliquent le rendu du prompt — à éviter si tu veux un contrôle précis.
 - **`href` figé après traitement** : avec le garde universel, un `<a>` déjà traité n'est pas recalculé si l'URL ou le titre de la page changent sans rechargement (contexte SPA-like). Sans impact sur Webflow, où la navigation recharge la page.
 - **Validation HTML W3C** : les attributs préfixés `wu-` (sans `data-`) sont signalés comme invalides par le validator W3C. Aucun impact réel sur les navigateurs, le SEO, le rendu ou l'accessibilité — c'est la même approche que Finsweet, Alpine.js, HTMX et Vue.
 
@@ -234,7 +234,7 @@ Grâce à l'idempotence (attribut `wu-ask-ai-applied`), relancer `init()` n'a **
 2. Pour un `<a>` : inspecter l'élément après chargement — le `href` est-il bien réécrit vers l'URL de l'IA ? Si oui, le script a tourné.
 3. L'attribut `wu-ask-ai-applied` est-il posé sur l'élément ? Confirmation que le script l'a traité.
 4. Prompt custom non pris en compte ? Vérifier que `wu-ask-ai-use` (sur le lien) et `wu-ask-ai-template` (sur le bloc caché) ont **exactement** le même nom (sensible à la casse).
-5. Le bloc template est-il un **bloc de texte simple** et non un Rich Text ? Inspecter son `textContent` dans la console.
+5. Le bloc template est-il bien un **bloc de texte simple** (recommandé) ? Les sauts de ligne (`<br>`/blocs) sont préservés ; vérifier le prompt résolu dans la console.
 6. Le prompt arrive tronqué dans l'IA ? Probable dépassement de longueur d'URL — raccourcir le template.
 7. L'IA ouvre mais ne pré-remplit pas le prompt ? Probable changement du deep-link côté éditeur (cf. Limitations) ou utilisateur non connecté.
 8. Contenu dynamique non traité ? Voir [Contenu injecté dynamiquement](#-contenu-injecté-dynamiquement-cms-load-modals-ajax) — appeler `window.WU.askAi.init()` après l'injection.
@@ -245,5 +245,6 @@ Grâce à l'idempotence (attribut `wu-ask-ai-applied`), relancer `init()` n'a **
 
 ## 📄 Changelog
 
+- **v1.0.2** — Préservation des sauts de ligne des templates : les `<br>` et fins de bloc (`<p>`/`<div>`/`<li>`) sont convertis en retours à la ligne, au lieu d'être écrasés par `textContent` (qui collait tout le prompt sur une ligne). Fonctionne en `display:none`.
 - **v1.0.1** — `{lang}` : conversion du code `<html lang>` en nom de langue lisible via `Intl.DisplayNames` (`en` → « English »), au lieu d'injecter le code brut. Fallback sur le code brut si la conversion échoue.
 - **v1.0.0** — Version initiale : raccourcis vers 5 providers (ChatGPT, Perplexity, Claude, Gemini, Grok), prompt par défaut de résumé / analyse SEO, templates custom nommés via `wu-ask-ai-template` / `wu-ask-ai-use`, placeholders `{url}` / `{title}` / `{site}` / `{lang}`, ajout automatique de `{url}` si absent, nom de site hérité via `closest` avec fallback hostname, support `<a>` et éléments cliquables, idempotence via `wu-ask-ai-applied`, expose `init()` sur `window.WU.askAi`.
