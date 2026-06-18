@@ -114,9 +114,10 @@
     );
     if (!source) return DEFAULT_PROMPT;
 
-    // Lecture brute + normalisation des espaces (bloc de texte caché, pas un
-    // Rich Text). Si le template est vide, on retombe sur le défaut.
-    const text = normalizeText(source.textContent);
+    // Lecture en préservant les sauts de ligne structurels (<br>, blocs),
+    // que textContent écraserait. Indépendant du CSS → marche en display:none.
+    // Si le template est vide, on retombe sur le défaut.
+    const text = normalizeText(readMultilineText(source));
     return text || DEFAULT_PROMPT;
   }
 
@@ -180,6 +181,17 @@
     } catch (err) {
       return clean; // code invalide ou Intl indisponible → code brut
     }
+  }
+
+  // Lit le texte d'un élément en préservant les sauts de ligne structurels :
+  // les <br> et les fins de bloc (<p>, <div>, <li>) deviennent des \n. On
+  // travaille sur un clone pour ne pas modifier le DOM réel. Contrairement à
+  // innerText, c'est indépendant du rendu CSS (fonctionne en display:none).
+  function readMultilineText(el) {
+    const clone = el.cloneNode(true);
+    clone.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
+    clone.querySelectorAll('p, div, li').forEach(block => block.append('\n'));
+    return clone.textContent;
   }
 
   // Normalise le texte d'un template : trim global + suppression des espaces
