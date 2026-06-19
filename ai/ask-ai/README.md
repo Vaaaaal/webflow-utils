@@ -170,6 +170,24 @@ Chaque lien ouvre l'IA correspondante avec le prompt de résumé par défaut, co
 
 ---
 
+## 📂 Prompts prêts à l'emploi
+
+Le dossier [`snippets/`](./snippets) contient des prompts prêts à coller dans un bloc template, en **français** ([`fr/`](./snippets/fr)) et en **anglais** ([`en/`](./snippets/en)) :
+
+| Usage | EN | FR |
+|---|---|---|
+| Résumé d'article + points clés | [`summarize-article`](./snippets/en/summarize-article.txt) | [`resume-article`](./snippets/fr/resume-article.txt) |
+| Audit SEO / GEO | [`seo-geo`](./snippets/en/seo-geo.txt) | [`seo-geo`](./snippets/fr/seo-geo.txt) |
+| Analyse page produit / service | [`product-page`](./snippets/en/product-page.txt) | [`page-produit`](./snippets/fr/page-produit.txt) |
+| Vulgarisation du contenu | [`explain-simply`](./snippets/en/explain-simply.txt) | [`explication-simple`](./snippets/fr/explication-simple.txt) |
+| Points clés (5 puces max) | [`key-points`](./snippets/en/key-points.txt) | [`points-cles`](./snippets/fr/points-cles.txt) |
+| FAQ optimisée AEO | [`qa-aeo`](./snippets/en/qa-aeo.txt) | [`qa-aeo`](./snippets/fr/qa-aeo.txt) |
+| Présentation de l'entreprise / marque | [`about-company`](./snippets/en/about-company.txt) | [`a-propos-entreprise`](./snippets/fr/a-propos-entreprise.txt) |
+
+> La langue du fichier est celle des **instructions**. Le placeholder `{lang}` reste indépendant et fait répondre l'IA dans la langue de la page (`<html lang>`) — un prompt `fr/` sur une page anglaise donnera donc des instructions en français mais une réponse en anglais. Voir le [README des snippets](./snippets/README.md).
+
+---
+
 ## 🔄 Contenu injecté dynamiquement (CMS Load, modals, AJAX)
 
 Le script tourne à `DOMContentLoaded` et traite tout ce qui est présent dans le DOM à ce moment-là. Pour des liens injectés **après** (pagination Finsweet CMS Load, modal AJAX, tab lazy-loadé…), relancer le script :
