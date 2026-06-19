@@ -1,0 +1,17 @@
+Explique le contenu de cette page à quelqu'un qui découvre le sujet et veut vraiment comprendre, pas juste survoler : {url}
+
+Contexte :
+- Source : {site}
+- Titre : {title}
+
+Vise l'explication qu'un bon pédagogue donnerait : claire d'abord, précise ensuite, jamais condescendante.
+
+Réponds en {lang}, en deux temps :
+
+D'abord, l'essentiel sans jargon — comme à quelqu'un qui n'y connaît rien : l'idée centrale expliquée avec une analogie concrète du quotidien, pour que le déclic se fasse.
+
+Ensuite, pour aller plus loin — les notions importantes reprises avec le vocabulaire juste, chaque terme technique étant expliqué au moment où il apparaît. Si une notion préalable est indispensable pour comprendre et qu'elle n'est pas sur la page, explique-la brièvement (recherche web si disponible).
+
+Termine par « ce qu'il faut retenir » : 3 points qui restent en tête une fois la page fermée.
+
+Vulgariser ne veut pas dire déformer : reste fidèle au fond, ne simplifie pas au point de rendre faux.
