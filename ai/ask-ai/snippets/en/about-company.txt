@@ -1,0 +1,13 @@
+Introduce the company {site}: who they are and what they do.
+
+Context:
+- Site: {site}
+- Reference page: {url}
+
+Guidelines:
+- Reply in {lang}
+- Explain {site}'s core business and the value it delivers
+- Specify who it serves (clients, industry, market)
+- Highlight what sets it apart
+- Rely on the site's content; if information is missing, say so rather than inventing it
+- Present {site} in a neutral, factual way, like a reference profile
