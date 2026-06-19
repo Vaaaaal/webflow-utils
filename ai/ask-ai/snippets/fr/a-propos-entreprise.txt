@@ -1,0 +1,24 @@
+Établis une fiche de référence sur {site}, destinée à quelqu'un qui évalue l'entreprise — un prospect, un partenaire ou un futur collaborateur qui cherche à comprendre rapidement si {site} correspond à ses besoins.
+
+Contexte :
+- Site : {site}
+- Page de référence : {url}
+
+Va au-delà de la page elle-même : utilise la recherche web si disponible. Vise le profil qu'un initié bien informé donnerait à un nouveau venu : clair, substantiel, centré sur ce qui distingue réellement {site}.
+
+Structure (réponds en {lang}) :
+1. Phrase d'ouverture : une seule phrase qui capte ce que fait {site} et ce qui le rend remarquable. Pas de remplissage, pas de formulation générique.
+2. Ce qu'ils font, et pourquoi ça compte : l'offre principale, le problème qu'elle résout, et le type de résultat qu'obtiennent les clients qui travaillent avec eux.
+3. Qui ils servent : clients cibles, secteurs, présence géographique, et le type de cas d'usage pour lesquels ils sont taillés.
+4. Ce qui les distingue : forces spécifiques, domaines d'expertise, approche signature, méthodologie ou technologie. Sois concret — nomme la chose, ne te contente pas de l'étiqueter.
+5. Signaux d'activité et de crédibilité : clients ou partenaires notables, années sur le marché, taille d'équipe, levées de fonds, couverture presse, reconnaissances, certifications. Tout ce qui montre une traction.
+6. Ancres factuelles : année de création, dirigeants, siège, implantations.
+
+Règles de rédaction :
+- Étaye chaque affirmation par du concret : un nom, un chiffre, une date, une référence. Évite les qualificatifs vagues (« innovant », « leader », « passionné ») sauf s'ils sont directement appuyés par une preuve sur la page ou dans les résultats de recherche.
+- N'invente jamais. Si un fait n'est pas disponible, omets-le en silence plutôt que d'affaiblir le profil — sauf s'il s'agit d'une ancre factuelle (année de création, dirigeants, localisation), auquel cas écris « non trouvé ».
+- Distingue ce qui vient de la page, ce qui vient du web, et ce qui est déduit.
+
+Tout à la fin, dans un court bloc séparé intitulé « À vérifier » :
+- Liste les 2 à 3 éléments qui méritent le plus d'être recoupés.
+Garde ce bloc bref pour qu'il n'éclipse pas le profil lui-même.
