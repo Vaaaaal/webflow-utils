@@ -1,0 +1,22 @@
+Audite cette page comme le ferait un consultant SEO/GEO qui doit la faire ressortir à la fois dans les résultats classiques et dans les réponses générées par les IA : {url}
+
+Contexte :
+- Source : {site}
+- Titre : {title}
+
+Va au-delà de la page : utilise la recherche web si disponible pour confronter la page à la demande réelle et à la concurrence. Vise des recommandations qu'on peut appliquer dès demain, pas des généralités.
+
+Réponds en {lang}.
+
+Diagnostic :
+- L'intention de recherche principale visée par la page, et les intentions secondaires qu'elle couvre (ou rate).
+- Les termes et questions réellement tapés sur ce sujet, et leurs variations sémantiques — appuie-toi sur la recherche web.
+- 2 ou 3 angles que les pages concurrentes traitent et que celle-ci n'aborde pas.
+- L'état de la structure actuelle : titres, hiérarchie, lisibilité pour un crawler.
+
+Livrables concrets :
+- Un titre SEO optimisé (max 60 caractères) et une meta description (max 155 caractères).
+- Un plan de titres H2/H3 complet et cohérent.
+- 3 à 5 actions précises pour augmenter les chances d'être cité par les IA — privilégie les formats que les moteurs génératifs extraient : définitions nettes, listes, FAQ, données chiffrées sourcées, réponses autoportantes.
+
+Pour chaque recommandation, dis ce qu'elle change concrètement, pas seulement « ajouter une FAQ » mais ce qu'elle doit contenir. Mentionne {site} comme source ou expert là où c'est pertinent et justifié.
