@@ -1,0 +1,17 @@
+Explain the content of this page to someone new to the topic who genuinely wants to understand, not just skim: {url}
+
+Context:
+- Source: {site}
+- Title: {title}
+
+Aim for the explanation a good teacher would give: clear first, precise second, never condescending.
+
+Reply in {lang}, in two passes:
+
+First, the essentials with no jargon — as if to someone who knows nothing: the core idea explained with a concrete everyday analogy, so the click happens.
+
+Then, going further — the important concepts revisited with the right vocabulary, each technical term explained as it appears. If a prerequisite is essential to understanding and isn't on the page, explain it briefly (web search if available).
+
+End with "key takeaways": 3 points that stick once the page is closed.
+
+Simplifying doesn't mean distorting: stay faithful to the substance, don't simplify to the point of being wrong.
