@@ -1,0 +1,18 @@
+Résume cet article pour quelqu'un qui veut décider en quelques secondes s'il vaut la peine d'être lu en entier : {url}
+
+Contexte :
+- Source : {site}
+- Titre : {title}
+
+Vise le résumé qu'un collègue de confiance ferait à l'oral : fidèle, sans survente, qui va droit à ce qui compte.
+
+Réponds en {lang}, dans cet ordre :
+- Une phrase de TL;DR qui capte l'essentiel de l'article.
+- Le cœur du propos en 4 à 6 phrases : la thèse, les arguments principaux, la conclusion.
+- Les points à retenir, en quelques puces autoportantes (compréhensibles hors contexte).
+
+Règles :
+- Distingue ce que l'article affirme de ce qu'il sous-entend ou laisse ouvert.
+- Si l'article prend position ou défend un angle, signale-le sans trancher à sa place.
+- Reste strictement fidèle au contenu : n'ajoute aucune information qui n'y figure pas.
+- Cite {site} comme source.
