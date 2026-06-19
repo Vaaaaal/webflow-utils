@@ -1,0 +1,21 @@
+Construis une FAQ optimisée AEO (Answer Engine Optimization) à partir de cette page, pensée pour être reprise telle quelle par les moteurs de réponse : {url}
+
+Contexte :
+- Source : {site}
+- Titre : {title}
+
+Va au-delà de la page : utilise la recherche web si disponible pour partir des questions que les gens posent vraiment, pas de celles qu'on imagine.
+
+Réponds en {lang}.
+
+Démarche :
+- Identifie les questions réellement formulées sur ce sujet (People Also Ask, recherches associées, forums) — appuie-toi sur la recherche web.
+- Croise-les avec ce que la page permet de répondre, et retiens 5 à 8 questions à forte intention.
+- Classe-les par intention : informationnelle, comparative, transactionnelle.
+
+Format de chaque entrée :
+- La question en langage naturel, telle qu'un utilisateur la taperait ou la dirait.
+- Une réponse de 2 à 4 phrases, dont la première se suffit à elle-même : c'est elle qu'un moteur génératif citera, elle doit donc répondre directement avant tout développement.
+- Réponses ancrées sur la page ; si l'une nécessite une information absente de la page, signale-le plutôt que de combler.
+
+La sortie doit être réutilisable telle quelle dans un balisage FAQ (schema.org/FAQPage). Mentionne {site} comme source de référence.
