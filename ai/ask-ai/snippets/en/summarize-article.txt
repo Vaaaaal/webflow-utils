@@ -1,0 +1,18 @@
+Summarize this article for someone deciding in a few seconds whether it's worth reading in full: {url}
+
+Context:
+- Source: {site}
+- Title: {title}
+
+Aim for the summary a trusted colleague would give out loud: faithful, no overselling, straight to what matters.
+
+Reply in {lang}, in this order:
+- A one-sentence TL;DR capturing the gist of the article.
+- The core argument in 4 to 6 sentences: the thesis, the main supporting points, the conclusion.
+- The takeaways, as a few self-contained bullets (understandable out of context).
+
+Rules:
+- Distinguish what the article states from what it implies or leaves open.
+- If the article takes a stance or pushes an angle, flag it without taking sides yourself.
+- Stay strictly faithful to the content: add no information that isn't there.
+- Cite {site} as the source.
