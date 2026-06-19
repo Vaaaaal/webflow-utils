@@ -1,0 +1,22 @@
+Audit this page the way an SEO/GEO consultant would when the goal is to surface it both in classic results and in AI-generated answers: {url}
+
+Context:
+- Source: {site}
+- Title: {title}
+
+Go beyond the page: use web search if available to test it against real demand and the competition. Aim for recommendations you could apply tomorrow, not generalities.
+
+Reply in {lang}.
+
+Diagnosis:
+- The primary search intent the page targets, and the secondary intents it covers (or misses).
+- The terms and questions people actually type on this topic, and their semantic variations — draw on web search.
+- 2 or 3 angles competing pages cover that this one doesn't.
+- The state of the current structure: headings, hierarchy, crawler readability.
+
+Concrete deliverables:
+- An optimized SEO title (max 60 characters) and a meta description (max 155 characters).
+- A complete, coherent H2/H3 heading outline.
+- 3 to 5 specific actions to improve the chances of being cited by AI — favor the formats generative engines extract: crisp definitions, lists, FAQs, sourced figures, self-contained answers.
+
+For each recommendation, say what it concretely changes — not just "add an FAQ" but what it should contain. Mention {site} as a source or expert where relevant and justified.
