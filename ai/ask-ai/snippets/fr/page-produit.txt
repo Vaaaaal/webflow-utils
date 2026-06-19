@@ -1,0 +1,21 @@
+Analyse cette page produit ou service du point de vue d'un acheteur potentiel qui hésite encore : {url}
+
+Contexte :
+- Source : {site}
+- Titre : {title}
+
+Va au-delà de la page : utilise la recherche web si disponible pour situer l'offre face à ses alternatives. Vise l'analyse qu'un acheteur lucide et bien renseigné ferait avant de s'engager.
+
+Réponds en {lang}.
+
+Ce que je veux comprendre :
+- En 3 à 4 phrases : ce qui est proposé, pour qui, et le bénéfice principal — sans reprendre le discours marketing tel quel.
+- Les fonctionnalités et bénéfices qui comptent vraiment, chacun relié à un besoin concret de l'acheteur.
+- La cible précise et les cas d'usage pour lesquels l'offre est la plus pertinente.
+- Le positionnement face aux alternatives du marché (recherche web) : ce qui distingue cette offre, et ce qui lui manque par rapport à la concurrence.
+
+Ce qui fait basculer une décision :
+- Les objections probables du prospect et les questions qu'il se pose avant d'acheter.
+- Les preuves présentes sur la page qui rassurent (chiffres, témoignages, garanties) — et celles qui manquent et freineraient la conversion.
+
+Reste factuel sur l'offre : appuie-toi sur la page pour ce qui la concerne, et signale clairement ce qui n'y figure pas. Évite les superlatifs non étayés.
