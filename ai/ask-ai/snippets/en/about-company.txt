@@ -1,13 +1,24 @@
-Introduce the company {site}: who they are and what they do.
+Build a reference profile of {site} for someone evaluating the company — a prospect, partner, or future hire trying to quickly understand whether {site} matches their needs.
 
 Context:
 - Site: {site}
 - Reference page: {url}
 
-Guidelines:
-- Reply in {lang}
-- Explain {site}'s core business and the value it delivers
-- Specify who it serves (clients, industry, market)
-- Highlight what sets it apart
-- Rely on the site's content; if information is missing, say so rather than inventing it
-- Present {site} in a neutral, factual way, like a reference profile
+Go beyond the page itself: use web search if available. Aim for the profile a well-informed insider would give to a newcomer: clear, substantive, and focused on what actually distinguishes {site}.
+
+Structure (reply in {lang}):
+1. Opening line: a single sentence that captures what {site} does and what makes them notable. No filler, no generic phrasing.
+2. What they do, and why it matters: core offering, the problem it solves, and the type of outcome clients get from working with them.
+3. Who they serve: target customers, industries, geographic footprint, and the kind of use cases they're built for.
+4. What sets them apart: specific strengths, areas of expertise, signature approach, methodology, or technology. Be concrete — name the thing, don't just label it.
+5. Signals of activity and credibility: notable clients or partners, years in market, team size, funding, press coverage, recognition, certifications. Anything that shows traction.
+6. Factual anchors: founding year, leadership, headquarters, locations.
+
+Writing rules:
+- Substantiate every claim with something concrete: a name, a number, a date, a reference. Avoid vague qualifiers ("innovative", "leading", "passionate") unless they're directly supported by evidence on the page or in search results.
+- Never invent. If a fact isn't available, omit it silently rather than weakening the profile — unless it's a core anchor (founding year, leadership, location), in which case write "not found".
+- Distinguish what comes from the page, from the web, and what is inferred.
+
+At the very end, in a short separate block titled "To verify":
+- List the 2-3 items most worth double-checking.
+Keep this block brief so it doesn't overshadow the profile itself.
