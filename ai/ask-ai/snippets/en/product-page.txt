@@ -1,0 +1,21 @@
+Analyze this product or service page from the perspective of a potential buyer who's still on the fence: {url}
+
+Context:
+- Source: {site}
+- Title: {title}
+
+Go beyond the page: use web search if available to place the offering against its alternatives. Aim for the analysis a clear-eyed, well-informed buyer would do before committing.
+
+Reply in {lang}.
+
+What I want to understand:
+- In 3 to 4 sentences: what's offered, for whom, and the main benefit — without parroting the marketing copy.
+- The features and benefits that actually matter, each tied to a concrete buyer need.
+- The precise audience and the use cases the offering fits best.
+- The positioning against market alternatives (web search): what sets this offering apart, and what it lacks compared to competitors.
+
+What tips a decision:
+- The prospect's likely objections and the questions they ask before buying.
+- The proof present on the page that reassures (figures, testimonials, guarantees) — and what's missing that would stall conversion.
+
+Stay factual about the offering: rely on the page for what concerns it, and clearly flag what isn't there. Avoid unsupported superlatives.
