@@ -1,0 +1,21 @@
+Build an AEO-optimized FAQ (Answer Engine Optimization) from this page, designed to be picked up as-is by answer engines: {url}
+
+Context:
+- Source: {site}
+- Title: {title}
+
+Go beyond the page: use web search if available to start from the questions people actually ask, not the ones you'd assume.
+
+Reply in {lang}.
+
+Process:
+- Identify the questions actually asked on this topic (People Also Ask, related searches, forums) — draw on web search.
+- Cross-reference them with what the page can answer, and keep 5 to 8 high-intent questions.
+- Sort them by intent: informational, comparative, transactional.
+
+Format for each entry:
+- The question in natural language, as a user would type or say it.
+- A 2-to-4-sentence answer whose first sentence stands on its own: that's what a generative engine will cite, so it must answer directly before any elaboration.
+- Answers anchored in the page; if one needs information missing from the page, flag it rather than filling the gap.
+
+The output must be reusable as-is in FAQ markup (schema.org/FAQPage). Mention {site} as the reference source.
