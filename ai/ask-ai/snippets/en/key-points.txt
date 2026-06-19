@@ -1,0 +1,14 @@
+Extract the key points from this page for someone who needs the essentials, fast: {url}
+
+Context:
+- Source: {site}
+- Title: {title}
+
+Aim for what you'd retain after a careful read: the information that matters, stripped of filler.
+
+Reply in {lang}:
+- 5 key points maximum, as bullets.
+- One short, self-contained sentence per point — each must stand on its own, out of context.
+- Ordered from most to least important.
+- Favor the factual and actionable; drop generalities and transitions.
+- No introduction, no conclusion: bullets only.
