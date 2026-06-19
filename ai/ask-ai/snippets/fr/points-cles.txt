@@ -1,0 +1,14 @@
+Extrais les points clés de cette page pour quelqu'un qui a besoin de l'essentiel, vite : {url}
+
+Contexte :
+- Source : {site}
+- Titre : {title}
+
+Vise ce qu'on retiendrait après une lecture attentive : les informations qui comptent, débarrassées du remplissage.
+
+Réponds en {lang} :
+- 5 points clés maximum, en puces.
+- Une phrase courte et autoportante par point — chacune doit tenir debout seule, hors contexte.
+- Classés du plus important au moins important.
+- Privilégie le factuel et l'actionnable ; écarte les généralités et les transitions.
+- Aucune introduction, aucune conclusion : seulement les puces.
