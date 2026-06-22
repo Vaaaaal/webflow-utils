@@ -20,7 +20,7 @@ Extensions et helpers pour [Finsweet Attributes](https://finsweet.com/attributes
 
 | Module | Description | Doc |
 |---|---|---|
-| [`finsweet/sort-direction`](./finsweet/sort-direction) | Force la direction (asc/desc) des sort triggers Finsweet List Sort — un bouton = une direction fixe, sans toggle, avec état actif réactif. | [README](./finsweet/sort-direction/README.md) |
+| [`finsweet/sort-direction`](./finsweet/sort-direction) | Force la direction (asc/desc) des sort triggers Finsweet List Sort — un bouton = une direction fixe, pas de toggle, sélection exclusive, bouton actif par défaut configurable. | [README](./finsweet/sort-direction/README.md) |
 
 ### Rich Text
 
