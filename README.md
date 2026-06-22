@@ -14,6 +14,14 @@ Les modules sont organisés par **catégorie** (CMS, UI, forms, etc.) pour reste
 |---|---|---|
 | [`cms/combine`](./cms/combine) | Fusionne deux Collection Lists Webflow en une seule, avec tri et limite optionnels. | [README](./cms/combine/README.md) |
 
+### Finsweet
+
+Extensions et helpers pour [Finsweet Attributes](https://finsweet.com/attributes).
+
+| Module | Description | Doc |
+|---|---|---|
+| [`finsweet/sort-direction`](./finsweet/sort-direction) | Force la direction (asc/desc) des sort triggers Finsweet List Sort — un bouton = une direction fixe, sans toggle, avec état actif réactif. | [README](./finsweet/sort-direction/README.md) |
+
 ### Rich Text
 
 | Module | Description | Doc |
@@ -84,12 +92,11 @@ webflow-utils/
 ├── LICENSE                         ← MIT
 ├── ai/                             ← catégorie : outillage IA / GEO
 │   └── ask-ai/
-│       ├── ask-ai.js               ← le script
-│       └── README.md               ← doc complète du module
 ├── cms/                            ← catégorie : manipulation CMS
-│   ├── README.md
 │   └── combine/
-│       ├── combine.js
+├── finsweet/                       ← catégorie : extensions Finsweet Attributes
+│   └── sort-direction/
+│       ├── sort-direction.js
 │       └── README.md
 ├── rich-text/                      ← catégorie : helpers Rich Text
 │   ├── list-variants/
@@ -116,6 +123,7 @@ webflow-utils/
 | `utils/` | Helpers génériques (lazyload, copy-to-clipboard) |
 | `rich-text/` | Helpers Rich Text Webflow (variantes de listes, injection de CTA, etc.) |
 | `ai/` | Outillage IA / GEO (raccourcis prompts, assistants, génération) |
+| `finsweet/` | Extensions et helpers pour Finsweet Attributes (List Filter, List Sort, List Load…) |
 
 Les catégories sont créées à la demande : pas besoin de toutes les avoir d'avance.
 
