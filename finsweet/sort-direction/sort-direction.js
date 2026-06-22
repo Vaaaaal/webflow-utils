@@ -1,14 +1,23 @@
 /**
  * webflow-utils / finsweet/sort-direction
- * Force la direction (asc/desc) des sort triggers Finsweet List Sort.
- * Chaque bouton applique une direction fixe — pas de toggle.
+ * Force la direction (asc/desc) des sort triggers Finsweet List Sort,
+ * sans toggle, avec sélection exclusive.
  *
- * Dépendance : Finsweet Attributes v2 (List Sort) doit être chargé sur la page.
+ * Architecture :
+ * Chaque bouton porte fs-list-element="sort-trigger" + fs-list-field (pour
+ * activer le module de sort Finsweet sur la page) + wu-sort-direction pour
+ * la direction voulue.
  *
- * Debug : poser window.WU_DEBUG = true avant le script, ou flipper la constante
- * DEBUG ci-dessous, pour activer les logs verbeux.
+ * Au clic, on intercepte en phase CAPTURE pour bloquer le listener natif
+ * de Finsweet (qui ferait son toggle), et on mute listInstance.sorting.value
+ * directement. Le watch interne de Finsweet (deep: true, debounce 0) détecte
+ * le changement et déclenche son pipeline : sortListItems() → render.
  *
- * Usage : voir README.md
+ * Le sort lui-même utilise donc l'implémentation Finsweet (number/date/text,
+ * gestion des Array values, animations CSS, scroll-to-anchor, query params…).
+ *
+ * Dépendance : Finsweet Attributes v2 (List Sort).
+ * Debug : poser window.WU_DEBUG = true avant le script.
  */
 (function () {
   'use strict';
@@ -16,10 +25,11 @@
   const DEBUG = false;
 
   const ATTR_DIRECTION = 'wu-sort-direction';
-  const ATTR_FIELD = 'wu-sort-direction-field';
   const ATTR_INSTANCE = 'wu-sort-direction-instance';
   const ATTR_ACTIVE_CLASS = 'wu-sort-direction-active-class';
   const ATTR_APPLIED = 'wu-sort-direction-applied';
+  const ATTR_FS_ELEMENT = 'fs-list-element';
+  const ATTR_FS_FIELD = 'fs-list-field';
 
   const DEFAULT_ACTIVE_CLASS = 'is-active';
   const VALID_DIRECTIONS = ['asc', 'desc'];
@@ -42,47 +52,45 @@
 
   function init() {
     const triggers = document.querySelectorAll(`[${ATTR_DIRECTION}]`);
-    log('init() called — triggers found:', triggers.length, triggers);
+    log('init() — triggers found:', triggers.length);
     if (!triggers.length) return;
-
-    if (!window.FinsweetAttributes) {
-      warn('window.FinsweetAttributes introuvable au moment du init(). ' +
-           'Vérifier que le script Finsweet est chargé AVANT ce module.');
-    }
 
     window.FinsweetAttributes = window.FinsweetAttributes || [];
     window.FinsweetAttributes.push([
       'list',
       function (listInstances) {
-        log('Finsweet callback fired — listInstances:', listInstances.length, listInstances);
-
-        // Expose pour debug console : window.WU.sortDirection._instances[0].sorting.value
+        log('🟢 Finsweet ready —', listInstances.length, 'instance(s)');
         window.WU = window.WU || {};
         window.WU.sortDirection = window.WU.sortDirection || {};
         window.WU.sortDirection._instances = listInstances;
-
-        triggers.forEach(function (trigger) {
-          processTrigger(trigger, listInstances);
-        });
+        triggers.forEach(function (t) { processTrigger(t, listInstances); });
       }
     ]);
   }
 
   function processTrigger(trigger, listInstances) {
-    if (trigger.hasAttribute(ATTR_APPLIED)) {
-      log('skip (déjà traité):', trigger);
-      return;
-    }
+    if (trigger.hasAttribute(ATTR_APPLIED)) return;
 
     const direction = trigger.getAttribute(ATTR_DIRECTION);
-    const fieldKey = trigger.getAttribute(ATTR_FIELD);
-
     if (VALID_DIRECTIONS.indexOf(direction) === -1) {
-      warn('direction invalide:', direction, '→ attendu "asc" ou "desc"', trigger);
+      warn('direction invalide:', direction, trigger);
       return;
     }
+
+    const fieldKey = trigger.getAttribute(ATTR_FS_FIELD);
     if (!fieldKey) {
-      warn('field manquant (wu-sort-direction-field) sur', trigger);
+      warn(
+        'fs-list-field manquant sur', trigger,
+        '— le bouton doit avoir fs-list-element="sort-trigger" + fs-list-field="..."'
+      );
+      return;
+    }
+
+    if (trigger.getAttribute(ATTR_FS_ELEMENT) !== 'sort-trigger') {
+      warn(
+        'fs-list-element="sort-trigger" manquant sur', trigger,
+        '— requis pour activer le module sort de Finsweet'
+      );
       return;
     }
 
@@ -93,12 +101,11 @@
       return (li.instance || null) === instanceKey;
     });
     if (!listInstance) {
-      warn('aucune List instance ne matche', instanceKey || '(default)', 'pour', trigger,
-           '— instances disponibles:', listInstances.map(function (li) { return li.instance || '(default)'; }));
+      warn('aucune List instance ne matche', instanceKey || '(default)', 'pour', trigger);
       return;
     }
 
-    log('trigger configuré:', { trigger: trigger, fieldKey: fieldKey, direction: direction, instance: instanceKey || '(default)' });
+    log('trigger configuré:', { fieldKey: fieldKey, direction: direction, instance: instanceKey || '(default)' });
 
     if (!itemsPerInstance.has(listInstance)) itemsPerInstance.set(listInstance, []);
     itemsPerInstance.get(listInstance).push({
@@ -110,46 +117,51 @@
 
     attachActiveStateEffect(listInstance);
 
+    // ─── Click handler en phase CAPTURE ──────────────────────────────
+    // S'exécute AVANT le listener bubble de Finsweet (cf. buttons.ts).
+    // stopImmediatePropagation bloque le listener natif → pas de toggle.
     trigger.addEventListener('click', function (e) {
       e.preventDefault();
+      e.stopImmediatePropagation();
 
-      log('CLICK sur', trigger);
-      log('  sorting AVANT mutation:', JSON.parse(JSON.stringify(listInstance.sorting.value)));
-      log('  items dans la list AVANT:', listInstance.items.value.length);
+      const current = listInstance.sorting.value || {};
+      const isAlreadyActive =
+        current.fieldKey === fieldKey &&
+        current.direction === direction;
 
-      // ⚠️ Mutation IN-PLACE des propriétés (pas de remplacement de l'objet entier).
-      // C'est ce que montre la doc Finsweet et c'est probablement ce que leur
-      // watcher interne attend pour déclencher le re-render de la liste.
-      listInstance.sorting.value.fieldKey = fieldKey;
-      listInstance.sorting.value.direction = direction;
-      listInstance.sorting.value.interacted = true;
-
-      log('  sorting APRÈS mutation:', JSON.parse(JSON.stringify(listInstance.sorting.value)));
-
-      // Filet de sécurité : si pour une raison X le re-sort ne se déclenche pas
-      // automatiquement, on force le hook. No-op si le sort tourne déjà.
-      if (typeof listInstance.triggerHook === 'function') {
-        listInstance.triggerHook('sort');
-        log('  triggerHook("sort") appelé');
+      if (isAlreadyActive) {
+        log('CLICK no-op (déjà actif):', fieldKey, direction);
+        return;
       }
-    });
+
+      log('CLICK →', fieldKey, direction);
+
+      // Réassignation complète de .value (comme le fait Finsweet en interne,
+      // cf. buttons.ts). Le watch interne deep:true détecte le changement
+      // et déclenche triggerHook('sort') debounced.
+      listInstance.sorting.value = {
+        fieldKey: fieldKey,
+        direction: direction,
+        interacted: true
+      };
+    }, { capture: true });
 
     trigger.setAttribute(ATTR_APPLIED, '');
   }
 
+  /**
+   * Effect réactif unique par instance pour gérer la classe active sur les
+   * boutons. Réagit à TOUT changement de sorting (clic, URL params, code
+   * externe), donc l'état actif reste synchronisé.
+   */
   function attachActiveStateEffect(listInstance) {
     if (effectsAttached.has(listInstance)) return;
     effectsAttached.add(listInstance);
-    log('attachActiveStateEffect — branchement de l\'effect réactif pour l\'instance', listInstance.instance || '(default)');
 
     listInstance.effect(function () {
       const items = itemsPerInstance.get(listInstance);
       if (!items) return;
-
-      const current = listInstance.sorting.value;
-      log('effect tick — sorting actuel:', JSON.parse(JSON.stringify(current)),
-          '| items à check:', items.length);
-
+      const current = listInstance.sorting.value || {};
       items.forEach(function (item) {
         const isActive =
           current.fieldKey === item.fieldKey &&
