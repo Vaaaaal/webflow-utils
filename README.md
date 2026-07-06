@@ -35,6 +35,12 @@ Extensions et helpers pour [Finsweet Attributes](https://finsweet.com/attributes
 |---|---|---|
 | [`ai/ask-ai`](./ai/ask-ai) | Transforme des liens/boutons en raccourcis vers une IA (ChatGPT, Claude, Perplexity, Gemini, Grok) avec un prompt pré-formé pour résumer ou analyser la page courante. | [README](./ai/ask-ai/README.md) |
 
+### Links
+
+| Module | Description | Doc |
+|---|---|---|
+| [`links/obfuscate`](./links/obfuscate) | Obfusque des liens (URL, email, tél.) en gardant la destination hors du HTML : contrôle du maillage SEO (link equity, crawl budget) et protection anti-spam. Pilotage par attributs, décodage au runtime. | [README](./links/obfuscate/README.md) |
+
 > D'autres catégories et modules seront ajoutés au fil des besoins.
 
 ---
@@ -98,6 +104,10 @@ webflow-utils/
 │   └── sort-direction/
 │       ├── sort-direction.js
 │       └── README.md
+├── links/                          ← catégorie : manipulation de liens
+│   └── obfuscate/
+│       ├── obfuscate.js
+│       └── README.md
 ├── rich-text/                      ← catégorie : helpers Rich Text
 │   ├── list-variants/
 │   └── blockquote-author/
@@ -120,6 +130,7 @@ webflow-utils/
 | `animations/` | Wrappers GSAP, scroll, hover |
 | `seo/` | Schema.org, meta, breadcrumbs |
 | `integrations/` | Tiers (Cal.com, Brevo, HubSpot) |
+| `links/` | Manipulation de liens (obfuscation, contrôle de maillage, tracking de clics, rel externes) |
 | `utils/` | Helpers génériques (lazyload, copy-to-clipboard) |
 | `rich-text/` | Helpers Rich Text Webflow (variantes de listes, injection de CTA, etc.) |
 | `ai/` | Outillage IA / GEO (raccourcis prompts, assistants, génération) |
