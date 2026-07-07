@@ -39,7 +39,8 @@ Extensions et helpers pour [Finsweet Attributes](https://finsweet.com/attributes
 
 | Module | Description | Doc |
 |---|---|---|
-| [`links/obfuscate`](./links/obfuscate) | Obfusque des liens (URL, email, tél.) en gardant la destination hors du HTML : contrôle du maillage SEO (link equity, crawl budget) et protection anti-spam. Pilotage par attributs, décodage au runtime. | [README](./links/obfuscate/README.md) |
+| [`links/obfuscate`](./links/obfuscate) | Obfusque des liens (URL, email, tél.) en gardant la destination hors du HTML (Base64, décodage au runtime) : contrôle du maillage SEO renforcé + protection anti-spam. | [README](./links/obfuscate/README.md) |
+| [`links/obfuscate-onclick`](./links/obfuscate-onclick) | Obfuscation SEO simplifiée (technique onclick, URL en clair) posable sur n'importe quel élément — empêche la transmission de jus vers les pages ciblées. | [README](./links/obfuscate-onclick/README.md) |
 
 > D'autres catégories et modules seront ajoutés au fil des besoins.
 
@@ -105,8 +106,11 @@ webflow-utils/
 │       ├── sort-direction.js
 │       └── README.md
 ├── links/                          ← catégorie : manipulation de liens
-│   └── obfuscate/
-│       ├── obfuscate.js
+│   ├── obfuscate/
+│   │   ├── obfuscate.js
+│   │   └── README.md
+│   └── obfuscate-onclick/
+│       ├── obfuscate-onclick.js
 │       └── README.md
 ├── rich-text/                      ← catégorie : helpers Rich Text
 │   ├── list-variants/
