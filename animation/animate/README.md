@@ -50,7 +50,7 @@ Tous les attributs du module sont préfixés par `wu-animate` pour éviter les c
 | `wu-animate-start` | position ScrollTrigger (ex. `top 90%`) | ❌ | `top 85%` |
 | `wu-animate-once` | `true` / `false` | ❌ | `true` |
 | `wu-animate-distance` | px — pour `fade-up/down/left/right` | ❌ | `40` |
-| `wu-animate-scale` | pour `scale-in` / `zoom-out` | ❌ | `0.9` |
+| `wu-animate-scale` | pour `scale-in` / `zoom-out` / `zoom-in` | ❌ | selon le preset — voir plus bas |
 | `wu-animate-blur` | px — pour `blur-in` | ❌ | `12` |
 
 ### Sur un wrapper de groupe
@@ -68,7 +68,9 @@ Tous les attributs du module sont préfixés par `wu-animate` pour éviter les c
 
 ### Presets disponibles
 
-`fade-up`, `fade-down`, `fade-left`, `fade-right`, `fade-in`, `scale-in`, `zoom-out`, `blur-in`.
+`fade-up`, `fade-down`, `fade-left`, `fade-right`, `fade-in`, `scale-in`, `zoom-out`, `zoom-in`, `blur-in`.
+
+Défauts de `wu-animate-scale` selon le preset : `scale-in` → `0.9` (subtil), `zoom-in` → `0.7` (plus marqué), `zoom-out` → `1.15`. Poser `wu-animate-scale` sur l'élément override le défaut, quel que soit le preset.
 
 ---
 
@@ -179,15 +181,17 @@ window.WU.animate.init();
 
 ## ⚠️ Limitations
 
-- **FOUC possible** : les éléments ne sont masqués qu'au moment où le script tourne (gsap.set()). Si GSAP charge tard, prévoir un fallback CSS critique dans le <head> :
-```
+- **FOUC possible** : les éléments ne sont masqués qu'au moment où le script tourne (`gsap.set()`). Si GSAP charge tard, prévoir un fallback CSS critique dans le `<head>` :
+
+  ```html
   <style>
     @media (prefers-reduced-motion: no-preference) {
       html:not(.wf-design-mode) [wu-animate] { opacity: 0; }
     }
   </style>
-```
-La media query évite de masquer inutilement les utilisateurs en prefers-reduced-motion: reduce, qui voient de toute façon l'élément révélé instantanément par le script (voir Comportement ci-dessus). Le html:not(.wf-design-mode) évite que la règle s'applique dans le Designer : .wf-design-mode est la classe posée par Webflow sur <html> en mode édition — sans cette exclusion, les éléments resteraient invisibles en permanence dans le canvas, puisque le custom code (donc animate.js) n'y tourne jamais.
+  ```
+
+  La media query évite de masquer inutilement les utilisateurs en `prefers-reduced-motion: reduce`, qui voient de toute façon l'élément révélé instantanément par le script (voir Comportement ci-dessus). Le `html:not(.wf-design-mode)` évite que la règle s'applique **dans le Designer** : `.wf-design-mode` est la classe posée par Webflow sur `<html>` en mode édition — sans cette exclusion, les éléments resteraient invisibles en permanence dans le canvas, puisque le custom code (donc `animate.js`) n'y tourne jamais.
 - **Validation HTML W3C** : les attributs préfixés `wu-` (sans `data-`) sont signalés comme invalides par le validator W3C. Aucun impact réel sur les navigateurs, le SEO, le rendu ou l'accessibilité — même approche que Finsweet, Alpine.js, HTMX et Vue.
 
 ---
@@ -205,6 +209,7 @@ La media query évite de masquer inutilement les utilisateurs en prefers-reduced
 
 ## 📄 Changelog
 
+- **v1.1.2** — Nouveau preset `zoom-in` (défaut `wu-animate-scale` : `0.7`). Fix au passage : `zoom-out` avait un fallback à `1.15` dans son code qui n'était en réalité jamais atteint (`wu-animate-scale` était déjà résolu à `0.9` avant même d'arriver au preset) — `zoom-out` se comportait donc comme `scale-in` par défaut. Chaque preset `scale-*`/`zoom-*` a maintenant son propre défaut, réellement appliqué quand `wu-animate-scale` n'est pas posé.
 - **v1.1.1** — Nouveau preset `blur-in` (fondu + défloutage, propriété `filter`) et attribut `wu-animate-blur` (défaut `12` px). Confirme au passage l'intérêt du format `{ from, to }` introduit en v1.1.0 : aucune modification du core n'a été nécessaire pour l'ajouter.
 - **v1.1.0** — Les presets déclarent maintenant `{ from, to }` au lieu de seulement l'état de départ, ce qui débloque des propriétés custom (`filter`, `rotation`…) au-delà de `x`/`y`/`scale` — voir "Presets personnalisés". **Breaking change** pour tout preset custom déjà écrit avant cette version : l'ancien format `o => ({x, y, scale})` doit devenir `o => ({ from: {x, y, scale}, to: {x: 0, y: 0, scale: 1} })`. Les presets fournis par le module (`fade-up`, `scale-in`…) sont déjà à jour.
 - **v1.0.1** — Fix : `ease` provoquait `Cannot read properties of undefined (reading 'ease')` et bloquait l'animation (élément resté invisible). Cause : contrairement à `duration`/`delay`, GSAP traite une fonction passée à `ease` comme une courbe d'accélération personnalisée (rappelée à chaque frame avec la progression 0→1), pas comme une "function-based value" résolue une fois par cible. `ease` fait maintenant partie de la clé de regroupement des éléments isolés (comme `start`/`once`) et est passée en string simple ; pour un groupe, elle se pose sur le wrapper (`wu-animate-ease`) plutôt que sur chaque enfant.
