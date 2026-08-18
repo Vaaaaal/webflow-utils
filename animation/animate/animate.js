@@ -29,6 +29,7 @@
   const ATTR_ONCE = 'wu-animate-once';
   const ATTR_DISTANCE = 'wu-animate-distance';
   const ATTR_SCALE = 'wu-animate-scale';
+  const ATTR_BLUR = 'wu-animate-blur';
   const ATTR_STAGGER = 'wu-animate-stagger';
   const ATTR_STAGGER_FROM = 'wu-animate-stagger-from';
 
@@ -37,7 +38,8 @@
     ease: 'power2.out',
     start: 'top 85%',
     distance: 40, // px — utilisé par fade-up / fade-down / fade-left / fade-right
-    scale: 0.9 // utilisé par scale-in / zoom-out
+    scale: 0.9, // utilisé par scale-in / zoom-out
+    blur: 12 // px — utilisé par blur-in
   };
 
   // Chaque preset déclare son état de départ (from) ET son état d'arrivée
@@ -53,7 +55,8 @@
     'fade-right': o => ({ from: { x: -o.distance, y: 0 }, to: { x: 0, y: 0 } }),
     'fade-in': () => ({ from: {}, to: {} }),
     'scale-in': o => ({ from: { x: 0, y: 0, scale: o.scale }, to: { x: 0, y: 0, scale: 1 } }),
-    'zoom-out': o => ({ from: { x: 0, y: 0, scale: o.scale || 1.15 }, to: { x: 0, y: 0, scale: 1 } })
+    'zoom-out': o => ({ from: { x: 0, y: 0, scale: o.scale || 1.15 }, to: { x: 0, y: 0, scale: 1 } }),
+    'blur-in': o => ({ from: { filter: `blur(${o.blur}px)` }, to: { filter: 'blur(0px)' } })
   };
 
   // Cache des options lues par élément (+ from/to résolus), pour ne pas
@@ -80,7 +83,8 @@
       start: el.getAttribute(ATTR_START) || DEFAULTS.start,
       once: el.getAttribute(ATTR_ONCE) !== 'false',
       distance: parseFloat(el.getAttribute(ATTR_DISTANCE)) || DEFAULTS.distance,
-      scale: parseFloat(el.getAttribute(ATTR_SCALE)) || DEFAULTS.scale
+      scale: parseFloat(el.getAttribute(ATTR_SCALE)) || DEFAULTS.scale,
+      blur: parseFloat(el.getAttribute(ATTR_BLUR)) || DEFAULTS.blur
     };
     const { from, to } = resolvePreset(options);
     options.from = from;
