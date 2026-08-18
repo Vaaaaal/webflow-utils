@@ -61,6 +61,9 @@ Tous les attributs du module sont préfixés par `wu-animate` pour éviter les c
 | `wu-animate-stagger-from` | `start` / `center` / `end` / `edges` / `random` | ❌ | `start` |
 | `wu-animate-start` | position ScrollTrigger du groupe | ❌ | `top 85%` |
 | `wu-animate-once` | `true` / `false` | ❌ | `true` |
+| `wu-animate-ease` | ease GSAP, **partagée par tous les enfants** du groupe | ❌ | `power2.out` |
+
+> ⚠️ Dans un groupe, `wu-animate-ease` posé sur un enfant est ignoré (duration/delay restent bien par enfant). Poser l'ease sur le **wrapper** si besoin d'autre chose que le défaut.
 
 ### Presets disponibles
 
@@ -161,9 +164,11 @@ window.WU.animate.init();
 3. Le site est-il publié ? Le custom code ne tourne pas en Preview.
 4. Rien ne s'anime dans un groupe ? Vérifier que `wu-animate-group` est bien sur le **wrapper direct** des enfants `wu-animate`.
 5. Console (F12) : une erreur JavaScript, ou le warning `[wu-animate] GSAP introuvable` ?
+6. Erreur `Cannot read properties of undefined (reading 'ease')` dans la console ? C'était un bug de la v1.0.0 (voir Changelog v1.0.1) — mettre à jour vers la dernière version du fichier.
 
 ---
 
 ## 📄 Changelog
 
+- **v1.0.1** — Fix : `ease` provoquait `Cannot read properties of undefined (reading 'ease')` et bloquait l'animation (élément resté invisible). Cause : contrairement à `duration`/`delay`, GSAP traite une fonction passée à `ease` comme une courbe d'accélération personnalisée (rappelée à chaque frame avec la progression 0→1), pas comme une "function-based value" résolue une fois par cible. `ease` fait maintenant partie de la clé de regroupement des éléments isolés (comme `start`/`once`) et est passée en string simple ; pour un groupe, elle se pose sur le wrapper (`wu-animate-ease`) plutôt que sur chaque enfant.
 - **v1.0.0** — Version initiale : presets fade/scale, groupes en stagger, batching des éléments isolés, support `prefers-reduced-motion`, idempotence via `wu-animate-applied`.
