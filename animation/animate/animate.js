@@ -38,8 +38,10 @@
     ease: 'power2.out',
     start: 'top 85%',
     distance: 40, // px — utilisé par fade-up / fade-down / fade-left / fade-right
-    scale: 0.9, // utilisé par scale-in / zoom-out
     blur: 12 // px — utilisé par blur-in
+    // scale : pas de défaut partagé ici — chaque preset scale-* déclare le
+    // sien (voir PRESETS), car "légèrement réduit" et "beaucoup plus grand"
+    // n'ont pas le même sens selon le preset.
   };
 
   // Chaque preset déclare son état de départ (from) ET son état d'arrivée
@@ -54,8 +56,9 @@
     'fade-left': o => ({ from: { x: o.distance, y: 0 }, to: { x: 0, y: 0 } }),
     'fade-right': o => ({ from: { x: -o.distance, y: 0 }, to: { x: 0, y: 0 } }),
     'fade-in': () => ({ from: {}, to: {} }),
-    'scale-in': o => ({ from: { x: 0, y: 0, scale: o.scale }, to: { x: 0, y: 0, scale: 1 } }),
-    'zoom-out': o => ({ from: { x: 0, y: 0, scale: o.scale || 1.15 }, to: { x: 0, y: 0, scale: 1 } }),
+    'scale-in': o => ({ from: { x: 0, y: 0, scale: o.scale ?? 0.9 }, to: { x: 0, y: 0, scale: 1 } }),
+    'zoom-out': o => ({ from: { x: 0, y: 0, scale: o.scale ?? 1.15 }, to: { x: 0, y: 0, scale: 1 } }),
+    'zoom-in': o => ({ from: { x: 0, y: 0, scale: o.scale ?? 0.7 }, to: { x: 0, y: 0, scale: 1 } }),
     'blur-in': o => ({ from: { filter: `blur(${o.blur}px)` }, to: { filter: 'blur(0px)' } })
   };
 
@@ -74,6 +77,15 @@
     return { from: resolved.from || {}, to: resolved.to || {} };
   }
 
+  // Comme parseFloat, mais renvoie undefined si l'attribut est absent OU
+  // non numérique — au lieu de NaN, qui casserait silencieusement un `??`
+  // en aval (NaN n'est ni null ni undefined).
+  function parseOptionalFloat(el, attr) {
+    if (!el.hasAttribute(attr)) return undefined;
+    const n = parseFloat(el.getAttribute(attr));
+    return Number.isNaN(n) ? undefined : n;
+  }
+
   function readOptions(el) {
     const options = {
       preset: el.getAttribute(ATTR_ANIMATE) || 'fade-up',
@@ -83,7 +95,7 @@
       start: el.getAttribute(ATTR_START) || DEFAULTS.start,
       once: el.getAttribute(ATTR_ONCE) !== 'false',
       distance: parseFloat(el.getAttribute(ATTR_DISTANCE)) || DEFAULTS.distance,
-      scale: parseFloat(el.getAttribute(ATTR_SCALE)) || DEFAULTS.scale,
+      scale: parseOptionalFloat(el, ATTR_SCALE),
       blur: parseFloat(el.getAttribute(ATTR_BLUR)) || DEFAULTS.blur
     };
     const { from, to } = resolvePreset(options);
