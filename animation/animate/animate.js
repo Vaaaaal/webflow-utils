@@ -40,23 +40,36 @@
     scale: 0.9 // utilisé par scale-in / zoom-out
   };
 
-  // Chaque preset ne touche que transform + opacity (autoAlpha) — rien qui
-  // déclenche du reflow. Pour ajouter un preset perso, étendre cet objet
-  // avant l'appel à init() (ex. dans un <script> chargé juste après).
+  // Chaque preset déclare son état de départ (from) ET son état d'arrivée
+  // (to) — c'est ce qui permet à un preset custom de toucher n'importe
+  // quelle propriété (filter, rotation…), pas seulement x/y/scale. Pour
+  // ajouter un preset perso : étendre cet objet avant l'appel à init()
+  // (ex. dans un <script> chargé juste après ce fichier). Voir le README,
+  // section "Presets personnalisés".
   const PRESETS = {
-    'fade-up': o => ({ x: 0, y: o.distance }),
-    'fade-down': o => ({ x: 0, y: -o.distance }),
-    'fade-left': o => ({ x: o.distance, y: 0 }),
-    'fade-right': o => ({ x: -o.distance, y: 0 }),
-    'fade-in': () => ({ x: 0, y: 0 }),
-    'scale-in': o => ({ x: 0, y: 0, scale: o.scale }),
-    'zoom-out': o => ({ x: 0, y: 0, scale: o.scale || 1.15 })
+    'fade-up': o => ({ from: { x: 0, y: o.distance }, to: { x: 0, y: 0 } }),
+    'fade-down': o => ({ from: { x: 0, y: -o.distance }, to: { x: 0, y: 0 } }),
+    'fade-left': o => ({ from: { x: o.distance, y: 0 }, to: { x: 0, y: 0 } }),
+    'fade-right': o => ({ from: { x: -o.distance, y: 0 }, to: { x: 0, y: 0 } }),
+    'fade-in': () => ({ from: {}, to: {} }),
+    'scale-in': o => ({ from: { x: 0, y: 0, scale: o.scale }, to: { x: 0, y: 0, scale: 1 } }),
+    'zoom-out': o => ({ from: { x: 0, y: 0, scale: o.scale || 1.15 }, to: { x: 0, y: 0, scale: 1 } })
   };
 
-  // Cache des options lues par élément, pour ne pas re-parser les attributs
-  // à chaque tween et pour permettre à un seul gsap.to() d'animer un lot
-  // d'éléments qui n'ont pas forcément les mêmes duration/delay/preset.
+  // Cache des options lues par élément (+ from/to résolus), pour ne pas
+  // re-parser les attributs à chaque tween et pour permettre à un seul
+  // gsap.to() d'animer un lot d'éléments qui n'ont pas forcément les mêmes
+  // duration/delay/preset/propriétés custom.
   const optionsCache = new WeakMap();
+
+  // Résout {from, to} pour un preset, avec repli sur fade-up si le preset
+  // est inconnu ou renvoie quelque chose d'invalide (preset custom buggé) —
+  // le reste de la page ne doit jamais casser pour ça.
+  function resolvePreset(options) {
+    const presetFn = PRESETS[options.preset] || PRESETS['fade-up'];
+    const resolved = presetFn(options) || {};
+    return { from: resolved.from || {}, to: resolved.to || {} };
+  }
 
   function readOptions(el) {
     const options = {
@@ -69,17 +82,15 @@
       distance: parseFloat(el.getAttribute(ATTR_DISTANCE)) || DEFAULTS.distance,
       scale: parseFloat(el.getAttribute(ATTR_SCALE)) || DEFAULTS.scale
     };
+    const { from, to } = resolvePreset(options);
+    options.from = from;
+    options.to = to;
     optionsCache.set(el, options);
     return options;
   }
 
   function setInitialState(el, options) {
-    const preset = PRESETS[options.preset] || PRESETS['fade-up'];
-    gsap.set(el, Object.assign({ autoAlpha: 0 }, preset(options)));
-  }
-
-  function revealInstantly(els) {
-    gsap.set(els, { autoAlpha: 1, x: 0, y: 0, scale: 1 });
+    gsap.set(el, Object.assign({ autoAlpha: 0 }, options.from));
   }
 
   // Lit, au moment où le tween se joue, l'option de CHAQUE cible dans le
@@ -95,6 +106,35 @@
   // le README, section Debug.
   function byOption(key) {
     return (i, target) => optionsCache.get(target)[key];
+  }
+
+  // Function-based value générique pour UNE propriété de l'état "to" d'un
+  // preset. Si la cible ne déclare pas cette propriété (ex. un preset qui
+  // ne touche pas `scale` dans un lot qui contient aussi des presets
+  // scale-in), on retombe sur sa valeur actuelle via gsap.getProperty —
+  // un no-op sûr quelle que soit la propriété (numérique, filter, etc.).
+  function byToProperty(key) {
+    return (i, target) => {
+      const to = optionsCache.get(target).to;
+      return key in to ? to[key] : gsap.getProperty(target, key);
+    };
+  }
+
+  // Construit les vars d'un tween/set pour un lot de cibles : autoAlpha
+  // toujours à 1 (universel à tous les presets), plus une function-based
+  // value pour chaque propriété déclarée par AU MOINS UN preset du lot.
+  function resolveToVars(targets, extra) {
+    const keys = new Set();
+    targets.forEach(el => {
+      Object.keys(optionsCache.get(el).to).forEach(k => keys.add(k));
+    });
+    const vars = Object.assign({ autoAlpha: 1 }, extra);
+    keys.forEach(key => { vars[key] = byToProperty(key); });
+    return vars;
+  }
+
+  function revealInstantly(els) {
+    gsap.set(els, resolveToVars(els));
   }
 
   // ---- Groupes en stagger -------------------------------------------------
@@ -133,11 +173,7 @@
         start: group.getAttribute(ATTR_START) || DEFAULTS.start,
         once: group.getAttribute(ATTR_ONCE) !== 'false',
         onEnter: () => {
-          gsap.to(children, {
-            autoAlpha: 1,
-            x: 0,
-            y: 0,
-            scale: 1,
+          gsap.to(children, resolveToVars(children, {
             duration: byOption('duration'),
             delay: byOption('delay'),
             ease: groupEase,
@@ -145,7 +181,7 @@
               each: parseFloat(group.getAttribute(ATTR_STAGGER)) || 0.1,
               from: group.getAttribute(ATTR_STAGGER_FROM) || 'start'
             }
-          });
+          }));
         }
       });
     });
@@ -195,17 +231,13 @@
         start: bucket.start,
         once: bucket.once,
         onEnter: batchEls => {
-          gsap.to(batchEls, {
-            autoAlpha: 1,
-            x: 0,
-            y: 0,
-            scale: 1,
+          gsap.to(batchEls, resolveToVars(batchEls, {
             duration: byOption('duration'),
             delay: byOption('delay'),
             ease: bucket.ease,
             stagger: 0.08,
             overwrite: true
-          });
+          }));
         }
       });
     });
