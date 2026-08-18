@@ -42,6 +42,12 @@ Extensions et helpers pour [Finsweet Attributes](https://finsweet.com/attributes
 | [`links/obfuscate`](./links/obfuscate) | Obfusque des liens (URL, email, tél.) en gardant la destination hors du HTML (Base64, décodage au runtime) : contrôle du maillage SEO renforcé + protection anti-spam. | [README](./links/obfuscate/README.md) |
 | [`links/obfuscate-onclick`](./links/obfuscate-onclick) | Obfuscation SEO simplifiée (technique onclick, URL en clair) posable sur n'importe quel élément — empêche la transmission de jus vers les pages ciblées. | [README](./links/obfuscate-onclick/README.md) |
 
+### Animation
+
+| Module | Description | Doc |
+|---|---|---|
+| [`animation/animate`](./animation/animate) | Anime l'apparition des éléments au scroll (fade, scale, slide) via des custom attributes, avec support des groupes en stagger — repose sur GSAP + ScrollTrigger. | [README](./animation/animate/README.md) |
+
 > D'autres catégories et modules seront ajoutés au fil des besoins.
 
 ---
@@ -99,6 +105,8 @@ webflow-utils/
 ├── LICENSE                         ← MIT
 ├── ai/                             ← catégorie : outillage IA / GEO
 │   └── ask-ai/
+├── animation/                      ← catégorie : animations GSAP au scroll
+│   └── animate/
 ├── cms/                            ← catégorie : manipulation CMS
 │   └── combine/
 ├── finsweet/                       ← catégorie : extensions Finsweet Attributes
@@ -131,7 +139,7 @@ webflow-utils/
 | `cms/` | Manipulation de Collection Lists (combine, filter, sort, search) |
 | `ui/` | Composants d'interface (tabs, modals, accordions, sliders) |
 | `forms/` | Helpers de formulaire (masking, multistep, validation) |
-| `animations/` | Wrappers GSAP, scroll, hover |
+| `animation/` | Wrappers GSAP, scroll, hover |
 | `seo/` | Schema.org, meta, breadcrumbs |
 | `integrations/` | Tiers (Cal.com, Brevo, HubSpot) |
 | `links/` | Manipulation de liens (obfuscation, contrôle de maillage, tracking de clics, rel externes) |
