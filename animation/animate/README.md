@@ -180,12 +180,14 @@ window.WU.animate.init();
 ## ⚠️ Limitations
 
 - **FOUC possible** : les éléments ne sont masqués qu'au moment où le script tourne (gsap.set()). Si GSAP charge tard, prévoir un fallback CSS critique dans le <head> :
+```
 html
   <style>
     @media (prefers-reduced-motion: no-preference) {
       html:not(.wf-design-mode) [wu-animate] { opacity: 0; }
     }
   </style>
+```
 La media query évite de masquer inutilement les utilisateurs en prefers-reduced-motion: reduce, qui voient de toute façon l'élément révélé instantanément par le script (voir Comportement ci-dessus). Le html:not(.wf-design-mode) évite que la règle s'applique dans le Designer : .wf-design-mode est la classe posée par Webflow sur <html> en mode édition — sans cette exclusion, les éléments resteraient invisibles en permanence dans le canvas, puisque le custom code (donc animate.js) n'y tourne jamais.
 - **Validation HTML W3C** : les attributs préfixés `wu-` (sans `data-`) sont signalés comme invalides par le validator W3C. Aucun impact réel sur les navigateurs, le SEO, le rendu ou l'accessibilité — même approche que Finsweet, Alpine.js, HTMX et Vue.
 
