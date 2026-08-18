@@ -29,7 +29,7 @@ Copier le contenu de [`animate.js`](./animate.js) entre des balises `<script>…
 ## 🧠 Concepts
 
 - **Élément animé** : tout élément portant `wu-animate="<preset>"`. Son état de départ (opacity, position, scale) est fixé immédiatement au chargement, puis animé vers son état final au scroll.
-- **Preset** : nom de l'animation (`fade-up`, `scale-in`…), voir la liste plus bas. Ne touche jamais que `opacity`/`x`/`y`/`scale` — pas de propriété qui déclenche du reflow.
+- **Preset** : nom de l'animation (`fade-up`, `scale-in`…), voir la liste plus bas. Chaque preset déclare un état de départ (`from`) et un état d'arrivée (`to`) — `opacity` est toujours géré séparément (universel à tous les presets). Les presets par défaut ne touchent que `x`/`y`/`scale`, mais un preset personnalisé peut déclarer n'importe quelle propriété (voir "Presets personnalisés" plus bas). Rester sur des propriétés qui passent par le compositeur (`transform`, `opacity`, `filter`) plutôt que des propriétés qui déclenchent du reflow (`width`, `top`…) reste recommandé pour la perf, mais n'est plus imposé techniquement par le module.
 - **Groupe** : un wrapper portant `wu-animate-group`, contenant plusieurs éléments `wu-animate`. Ils se déclenchent ensemble, en stagger, sur un seul ScrollTrigger posé sur le wrapper — même si les enfants utilisent des presets différents.
 - **Élément isolé** (hors groupe) : les éléments qui partagent les mêmes `wu-animate-start`/`wu-animate-once` sont regroupés en interne sur un seul `ScrollTrigger.batch()`, pour éviter de créer un ScrollTrigger par élément sur une page qui en contient beaucoup.
 
@@ -68,6 +68,33 @@ Tous les attributs du module sont préfixés par `wu-animate` pour éviter les c
 ### Presets disponibles
 
 `fade-up`, `fade-down`, `fade-left`, `fade-right`, `fade-in`, `scale-in`, `zoom-out`.
+
+---
+
+## ✨ Presets personnalisés
+
+`window.WU.animate.presets` est exposé publiquement — on peut y ajouter des presets spécifiques à un site sans toucher au fichier partagé. Un preset est une fonction `(options) => ({ from, to })` où `options` contient les valeurs déjà résolues de l'élément (`distance`, `scale`, etc., issues de ses attributs `wu-animate-*`).
+
+**Où l'ajouter** : dans le Footer Code du site concerné, dans un `<script>` posé **juste après** celui d'`animate.js`. Comme le script s'auto-init sur `DOMContentLoaded` (et jamais avant, tant que le HTML est encore en train de parser), ce second `<script>` a le temps de s'exécuter avant que les éléments ne soient traités.
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/Vaaaaal/webflow-utils@main/animation/animate/animate.js"></script>
+<script>
+  // Preset spécifique à ce site — n'existe que sur ce projet
+  WU.animate.presets['iskera-blur-in'] = o => ({
+    from: { y: o.distance, filter: 'blur(12px)' },
+    to: { y: 0, filter: 'blur(0px)' }
+  });
+</script>
+```
+
+```html
+<div wu-animate="iskera-blur-in" wu-animate-distance="30">Contenu qui apparaît en se démasquant</div>
+```
+
+Préfixer le nom du preset par le nom du site (`iskera-*`) évite les collisions si un bout de code est recopié d'un projet à l'autre.
+
+**Comportement dans un lot mixte** : si un élément d'un groupe ou d'un batch ne déclare pas une propriété que d'autres éléments du même lot utilisent (ex. un `fade-up` classique à côté d'un `iskera-blur-in`), le module retombe sur la valeur actuelle de cet élément pour cette propriété — un no-op sûr, jamais une erreur.
 
 ---
 
@@ -152,7 +179,6 @@ window.WU.animate.init();
 ## ⚠️ Limitations
 
 - **FOUC possible** : les éléments ne sont masqués qu'au moment où le script tourne (`gsap.set()`). Si GSAP charge tard, prévoir un fallback CSS critique dans le `<head>`, ex. `[wu-animate]{opacity:0}`, pour éviter un flash de contenu visible.
-- **Propriétés animées** : uniquement `opacity`/`x`/`y`/`scale`. Pour un preset qui touche `filter` (blur) ou une autre propriété, étendre l'objet `PRESETS` dans `animate.js`.
 - **Validation HTML W3C** : les attributs préfixés `wu-` (sans `data-`) sont signalés comme invalides par le validator W3C. Aucun impact réel sur les navigateurs, le SEO, le rendu ou l'accessibilité — même approche que Finsweet, Alpine.js, HTMX et Vue.
 
 ---
@@ -170,5 +196,6 @@ window.WU.animate.init();
 
 ## 📄 Changelog
 
+- **v1.1.0** — Les presets déclarent maintenant `{ from, to }` au lieu de seulement l'état de départ, ce qui débloque des propriétés custom (`filter`, `rotation`…) au-delà de `x`/`y`/`scale` — voir "Presets personnalisés". **Breaking change** pour tout preset custom déjà écrit avant cette version : l'ancien format `o => ({x, y, scale})` doit devenir `o => ({ from: {x, y, scale}, to: {x: 0, y: 0, scale: 1} })`. Les presets fournis par le module (`fade-up`, `scale-in`…) sont déjà à jour.
 - **v1.0.1** — Fix : `ease` provoquait `Cannot read properties of undefined (reading 'ease')` et bloquait l'animation (élément resté invisible). Cause : contrairement à `duration`/`delay`, GSAP traite une fonction passée à `ease` comme une courbe d'accélération personnalisée (rappelée à chaque frame avec la progression 0→1), pas comme une "function-based value" résolue une fois par cible. `ease` fait maintenant partie de la clé de regroupement des éléments isolés (comme `start`/`once`) et est passée en string simple ; pour un groupe, elle se pose sur le wrapper (`wu-animate-ease`) plutôt que sur chaque enfant.
 - **v1.0.0** — Version initiale : presets fade/scale, groupes en stagger, batching des éléments isolés, support `prefers-reduced-motion`, idempotence via `wu-animate-applied`.
