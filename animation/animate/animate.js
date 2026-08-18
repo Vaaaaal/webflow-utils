@@ -55,7 +55,7 @@
 
   // Cache des options lues par élément, pour ne pas re-parser les attributs
   // à chaque tween et pour permettre à un seul gsap.to() d'animer un lot
-  // d'éléments qui n'ont pas forcément les mêmes duration/delay/ease/preset.
+  // d'éléments qui n'ont pas forcément les mêmes duration/delay/preset.
   const optionsCache = new WeakMap();
 
   function readOptions(el) {
@@ -86,6 +86,13 @@
   // cache — permet à un seul gsap.to(elements, {...}) d'animer des
   // éléments avec des réglages différents plutôt que de créer un tween
   // par élément.
+  //
+  // ⚠️ NE JAMAIS utiliser ça pour `ease` : contrairement à duration/delay/
+  // x/y/scale, GSAP traite une fonction passée à `ease` comme une courbe
+  // d'accélération personnalisée (appelée à CHAQUE frame avec la progression
+  // 0→1, pas une fois par cible avec (index, target)). Lui passer une
+  // fonction "resolver" comme celle-ci casse le rendu à chaque frame. Voir
+  // le README, section Debug.
   function byOption(key) {
     return (i, target) => optionsCache.get(target)[key];
   }
@@ -113,6 +120,12 @@
 
       children.forEach(el => setInitialState(el, optionsCache.get(el)));
 
+      // L'ease est partagée par tout le groupe (limitation GSAP, voir
+      // byOption ci-dessus) : posée sur le wrapper via wu-animate-ease,
+      // sinon celle du DEFAULTS. Les wu-animate-ease individuels des
+      // enfants sont ignorés pour l'ease (mais gardés pour duration/delay).
+      const groupEase = group.getAttribute(ATTR_EASE) || DEFAULTS.ease;
+
       // Un seul ScrollTrigger pour tout le groupe, posé sur le wrapper —
       // le déclenchement individuel de chaque enfant n'a pas de sens ici.
       ScrollTrigger.create({
@@ -127,7 +140,7 @@
             scale: 1,
             duration: byOption('duration'),
             delay: byOption('delay'),
-            ease: byOption('ease'),
+            ease: groupEase,
             stagger: {
               each: parseFloat(group.getAttribute(ATTR_STAGGER)) || 0.1,
               from: group.getAttribute(ATTR_STAGGER_FROM) || 'start'
@@ -139,10 +152,13 @@
   }
 
   // ---- Éléments isolés, regroupés par config partagée ---------------------
-  // Les éléments qui partagent le même start/once finissent sur UN SEUL
+  // Les éléments qui partagent le même start/once/ease finissent sur UN SEUL
   // ScrollTrigger.batch() au lieu d'un ScrollTrigger par élément — c'est ce
   // qui garde une page pleine de "fade-up" légère (cf. recommandations GSAP
-  // sur les listes d'éléments animés de la même façon).
+  // sur les listes d'éléments animés de la même façon). `ease` fait partie
+  // de la clé de regroupement (et non une function-based value, voir
+  // byOption ci-dessus) : chaque bucket reste homogène et reçoit une string
+  // simple.
   function initIndividual(reduced) {
     const els = Array.from(
       document.querySelectorAll(`[${ATTR_ANIMATE}]:not([${ATTR_APPLIED}])`)
@@ -164,8 +180,13 @@
     const buckets = {};
     els.forEach(el => {
       const options = optionsCache.get(el);
-      const key = `${options.start}|${options.once}`;
-      (buckets[key] = buckets[key] || { start: options.start, once: options.once, els: [] }).els.push(el);
+      const key = `${options.start}|${options.once}|${options.ease}`;
+      (buckets[key] = buckets[key] || {
+        start: options.start,
+        once: options.once,
+        ease: options.ease,
+        els: []
+      }).els.push(el);
     });
 
     Object.keys(buckets).forEach(key => {
@@ -181,7 +202,7 @@
             scale: 1,
             duration: byOption('duration'),
             delay: byOption('delay'),
-            ease: byOption('ease'),
+            ease: bucket.ease,
             stagger: 0.08,
             overwrite: true
           });
