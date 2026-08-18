@@ -181,7 +181,6 @@ window.WU.animate.init();
 
 - **FOUC possible** : les éléments ne sont masqués qu'au moment où le script tourne (gsap.set()). Si GSAP charge tard, prévoir un fallback CSS critique dans le <head> :
 ```
-html
   <style>
     @media (prefers-reduced-motion: no-preference) {
       html:not(.wf-design-mode) [wu-animate] { opacity: 0; }
