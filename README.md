@@ -13,6 +13,7 @@ Les modules sont organisés par **catégorie** (CMS, UI, forms, etc.) pour reste
 | Module | Description | Doc |
 |---|---|---|
 | [`cms/combine`](./cms/combine) | Fusionne deux Collection Lists Webflow en une seule, avec tri et limite optionnels. | [README](./cms/combine/README.md) |
+| [`cms/localize-date`](./cms/localize-date) | Reformate l'affichage des dates CMS (toujours en anglais nativement) selon la langue courante de la page, via Intl.DateTimeFormat. | [README](./cms/localize-date/README.md) |
 
 ### Finsweet
 
