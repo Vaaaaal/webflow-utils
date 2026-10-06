@@ -71,10 +71,27 @@
   // Résout {from, to} pour un preset, avec repli sur fade-up si le preset
   // est inconnu ou renvoie quelque chose d'invalide (preset custom buggé) —
   // le reste de la page ne doit jamais casser pour ça.
+  //
+  // Un preset peut aussi déclarer ses propres valeurs par défaut pour
+  // `ease` et `duration` (ex. un preset élastique qui n'a de sens qu'avec
+  // elastic.out). Ordre de priorité : attribut wu-animate-* > valeur du
+  // preset > DEFAULTS. `ease` doit être une STRING (une fonction serait
+  // traitée par GSAP comme une courbe custom — voir byOption plus bas) :
+  // toute autre valeur est ignorée.
   function resolvePreset(options) {
     const presetFn = PRESETS[options.preset] || PRESETS['fade-up'];
     const resolved = presetFn(options) || {};
-    return { from: resolved.from || {}, to: resolved.to || {} };
+    if (resolved.ease !== undefined && typeof resolved.ease !== 'string') {
+      console.warn(`[wu-animate] preset "${options.preset}" : "ease" doit être une string — ignorée.`);
+    }
+    return {
+      from: resolved.from || {},
+      to: resolved.to || {},
+      ease: typeof resolved.ease === 'string' ? resolved.ease : undefined,
+      duration: typeof resolved.duration === 'number' && resolved.duration > 0
+        ? resolved.duration
+        : undefined
+    };
   }
 
   // Comme parseFloat, mais renvoie undefined si l'attribut est absent OU
@@ -89,18 +106,19 @@
   function readOptions(el) {
     const options = {
       preset: el.getAttribute(ATTR_ANIMATE) || 'fade-up',
-      duration: parseFloat(el.getAttribute(ATTR_DURATION)) || DEFAULTS.duration,
       delay: parseFloat(el.getAttribute(ATTR_DELAY)) || 0,
-      ease: el.getAttribute(ATTR_EASE) || DEFAULTS.ease,
       start: el.getAttribute(ATTR_START) || DEFAULTS.start,
       once: el.getAttribute(ATTR_ONCE) !== 'false',
       distance: parseFloat(el.getAttribute(ATTR_DISTANCE)) || DEFAULTS.distance,
       scale: parseOptionalFloat(el, ATTR_SCALE),
       blur: parseFloat(el.getAttribute(ATTR_BLUR)) || DEFAULTS.blur
     };
-    const { from, to } = resolvePreset(options);
-    options.from = from;
-    options.to = to;
+    const preset = resolvePreset(options);
+    options.from = preset.from;
+    options.to = preset.to;
+    // Attribut > preset > DEFAULTS (résolus après le preset, qui n'en a pas besoin)
+    options.duration = parseFloat(el.getAttribute(ATTR_DURATION)) || preset.duration || DEFAULTS.duration;
+    options.ease = el.getAttribute(ATTR_EASE) || preset.ease || DEFAULTS.ease;
     optionsCache.set(el, options);
     return options;
   }
@@ -176,11 +194,14 @@
 
       children.forEach(el => setInitialState(el, optionsCache.get(el)));
 
-      // L'ease est partagée par tout le groupe (limitation GSAP, voir
-      // byOption ci-dessus) : posée sur le wrapper via wu-animate-ease,
-      // sinon celle du DEFAULTS. Les wu-animate-ease individuels des
-      // enfants sont ignorés pour l'ease (mais gardés pour duration/delay).
-      const groupEase = group.getAttribute(ATTR_EASE) || DEFAULTS.ease;
+      // Ease : wu-animate-ease sur le wrapper force la même ease pour tout
+      // le groupe. Sinon chaque enfant garde la sienne (attribut > preset >
+      // DEFAULTS). Comme `ease` ne peut pas être une function-based value
+      // (voir byOption), on crée un tween par ease distincte — en pratique
+      // un seul dans la grande majorité des groupes.
+      const groupEase = group.getAttribute(ATTR_EASE);
+      const staggerEach = parseFloat(group.getAttribute(ATTR_STAGGER)) || 0.1;
+      const staggerFrom = group.getAttribute(ATTR_STAGGER_FROM) || 'start';
 
       // Un seul ScrollTrigger pour tout le groupe, posé sur le wrapper —
       // le déclenchement individuel de chaque enfant n'a pas de sens ici.
@@ -189,15 +210,27 @@
         start: group.getAttribute(ATTR_START) || DEFAULTS.start,
         once: group.getAttribute(ATTR_ONCE) !== 'false',
         onEnter: () => {
-          gsap.to(children, resolveToVars(children, {
-            duration: byOption('duration'),
-            delay: byOption('delay'),
-            ease: groupEase,
-            stagger: {
-              each: parseFloat(group.getAttribute(ATTR_STAGGER)) || 0.1,
-              from: group.getAttribute(ATTR_STAGGER_FROM) || 'start'
-            }
-          }));
+          // Le stagger est calculé sur l'ensemble du groupe (index dans
+          // `children`), puis ajouté au delay de chaque enfant : le rythme
+          // reste identique même si les enfants sont répartis sur plusieurs
+          // tweens à cause d'eases différentes.
+          const staggerDelay = gsap.utils.distribute({ each: staggerEach, from: staggerFrom });
+          const offsets = new Map(children.map((el, i) => [el, staggerDelay(i, el, children)]));
+
+          const byEase = new Map();
+          children.forEach(el => {
+            const ease = groupEase || optionsCache.get(el).ease;
+            if (!byEase.has(ease)) byEase.set(ease, []);
+            byEase.get(ease).push(el);
+          });
+
+          byEase.forEach((els, ease) => {
+            gsap.to(els, resolveToVars(els, {
+              duration: byOption('duration'),
+              delay: (i, target) => optionsCache.get(target).delay + offsets.get(target),
+              ease
+            }));
+          });
         }
       });
     });
