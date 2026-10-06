@@ -44,9 +44,9 @@ Tous les attributs du module sont préfixés par `wu-animate` pour éviter les c
 | Attribut | Valeurs | Obligatoire | Défaut |
 |---|---|---|---|
 | `wu-animate` | nom du preset (voir ci-dessous) | ✅ | `fade-up` |
-| `wu-animate-duration` | secondes (ex. `1.2`) | ❌ | `0.8` |
+| `wu-animate-duration` | secondes (ex. `1.2`) | ❌ | celle du preset, sinon `0.8` |
 | `wu-animate-delay` | secondes | ❌ | `0` |
-| `wu-animate-ease` | ease GSAP (ex. `power3.out`) | ❌ | `power2.out` |
+| `wu-animate-ease` | ease GSAP (ex. `power3.out`) | ❌ | celle du preset, sinon `power2.out` |
 | `wu-animate-start` | position ScrollTrigger (ex. `top 90%`) | ❌ | `top 85%` |
 | `wu-animate-once` | `true` / `false` | ❌ | `true` |
 | `wu-animate-distance` | px — pour `fade-up/down/left/right` | ❌ | `40` |
@@ -62,9 +62,9 @@ Tous les attributs du module sont préfixés par `wu-animate` pour éviter les c
 | `wu-animate-stagger-from` | `start` / `center` / `end` / `edges` / `random` | ❌ | `start` |
 | `wu-animate-start` | position ScrollTrigger du groupe | ❌ | `top 85%` |
 | `wu-animate-once` | `true` / `false` | ❌ | `true` |
-| `wu-animate-ease` | ease GSAP, **partagée par tous les enfants** du groupe | ❌ | `power2.out` |
+| `wu-animate-ease` | ease GSAP **forcée pour tous les enfants** du groupe | ❌ | — (chaque enfant garde la sienne) |
 
-> ⚠️ Dans un groupe, `wu-animate-ease` posé sur un enfant est ignoré (duration/delay restent bien par enfant). Poser l'ease sur le **wrapper** si besoin d'autre chose que le défaut.
+> Dans un groupe, chaque enfant garde son ease (attribut de l'enfant > ease du preset > `power2.out`). Poser `wu-animate-ease` sur le **wrapper** force la même ease pour tous les enfants. Le stagger reste calculé sur l'ensemble du groupe, même quand les enfants ont des eases différentes.
 
 ### Presets disponibles
 
@@ -96,6 +96,28 @@ Défauts de `wu-animate-scale` selon le preset : `scale-in` → `0.9` (subtil), 
 ```
 
 Préfixer le nom du preset par le nom du site (`iskera-*`) évite les collisions si un bout de code est recopié d'un projet à l'autre.
+
+### Ease et durée par défaut d'un preset
+
+Un preset peut aussi déclarer son `ease` et sa `duration` par défaut, à côté de `from`/`to`. Utile quand l'animation n'a de sens qu'avec une ease précise (élastique, back…) : plus besoin de répéter l'attribut sur chaque élément.
+
+```html
+<script>
+  WU.animate.presets['pop'] = o => ({
+    from: { y: 8, scale: o.scale ?? 0.7 },
+    to: { y: 0, scale: 1 },
+    ease: 'elastic.out(1, 0.6)',
+    duration: 0.8
+  });
+</script>
+```
+
+```html
+<div wu-animate="pop">Apparaît avec un léger rebond</div>
+<div wu-animate="pop" wu-animate-ease="back.out(1.7)">Override ponctuel</div>
+```
+
+Priorité : attribut `wu-animate-ease` / `wu-animate-duration` > valeur du preset > défaut du module. `ease` doit être une **string** (une fonction est ignorée avec un `console.warn`, voir Changelog v1.0.1).
 
 **Comportement dans un lot mixte** : si un élément d'un groupe ou d'un batch ne déclare pas une propriété que d'autres éléments du même lot utilisent (ex. un `fade-up` classique à côté d'un `iskera-blur-in`), le module retombe sur la valeur actuelle de cet élément pour cette propriété — un no-op sûr, jamais une erreur.
 
@@ -209,6 +231,7 @@ window.WU.animate.init();
 
 ## 📄 Changelog
 
+- **v1.2.0** — Un preset peut déclarer son `ease` et sa `duration` par défaut (`{ from, to, ease, duration }`), utilisés quand l'élément ne pose pas l'attribut correspondant. Dans un groupe, chaque enfant garde maintenant son ease (attribut ou preset) au lieu de toujours prendre `power2.out` : le module crée un tween par ease distincte et calcule le stagger sur tout le groupe (`gsap.utils.distribute`), donc le rythme ne change pas. `wu-animate-ease` sur le wrapper force toujours la même ease pour tout le groupe. Changement de comportement : un `wu-animate-ease` posé sur un enfant de groupe, auparavant ignoré, est désormais appliqué.
 - **v1.1.2** — Nouveau preset `zoom-in` (défaut `wu-animate-scale` : `0.7`). Fix au passage : `zoom-out` avait un fallback à `1.15` dans son code qui n'était en réalité jamais atteint (`wu-animate-scale` était déjà résolu à `0.9` avant même d'arriver au preset) — `zoom-out` se comportait donc comme `scale-in` par défaut. Chaque preset `scale-*`/`zoom-*` a maintenant son propre défaut, réellement appliqué quand `wu-animate-scale` n'est pas posé.
 - **v1.1.1** — Nouveau preset `blur-in` (fondu + défloutage, propriété `filter`) et attribut `wu-animate-blur` (défaut `12` px). Confirme au passage l'intérêt du format `{ from, to }` introduit en v1.1.0 : aucune modification du core n'a été nécessaire pour l'ajouter.
 - **v1.1.0** — Les presets déclarent maintenant `{ from, to }` au lieu de seulement l'état de départ, ce qui débloque des propriétés custom (`filter`, `rotation`…) au-delà de `x`/`y`/`scale` — voir "Presets personnalisés". **Breaking change** pour tout preset custom déjà écrit avant cette version : l'ancien format `o => ({x, y, scale})` doit devenir `o => ({ from: {x, y, scale}, to: {x: 0, y: 0, scale: 1} })`. Les presets fournis par le module (`fade-up`, `scale-in`…) sont déjà à jour.
