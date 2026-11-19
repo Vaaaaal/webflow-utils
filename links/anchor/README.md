@@ -13,10 +13,11 @@ renommages de slug et les déplacements de page.
 Colle le script avant `</body>` (Project Settings → Custom Code, ou Page Settings) :
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/Vaaaaal/webflow-utils@main/links/anchor/anchor.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Vaaaaal/webflow-utils@anchor-1.0.1/links/anchor/anchor.js"></script>
 ```
 
-En prod, préfère un tag figé (`@v1.x.x`) à `@main`.
+Le tag `anchor-x.y.z` fige la version du module (voir Changelog). Pour suivre
+la dernière version en développement, remplacer par `@main` (déconseillé en prod).
 
 ## Attributs
 
@@ -78,3 +79,10 @@ En prod, préfère un tag figé (`@v1.x.x`) à `@main`.
 - **Inspecter le lien** : la présence de `wu-anchor-applied` confirme que le
   script est passé.
 - **Console** : les messages sont préfixés `[wu-anchor]`.
+
+---
+
+## 📄 Changelog
+
+- **v1.0.1** (tag `anchor-1.0.1`) — Fix : les `wu-anchor` vides sont ignorés silencieusement. Un composant partagé (ex. Clickable avec un champ Anchor non rempli) écrit `wu-anchor=""` sur chaque lien, ce qui générait un warning « valeur vide » par lien à chaque chargement, répété à chaque appel de `WU.anchor.init()` (34 warnings par appel sur l'accueil Intervista). Au passage, les liens `mailto:` / `tel:` / href invalide sont marqués `wu-anchor-applied` après leur warning, pour ne plus être re-signalés à chaque `init()`.
+- **v1.0.0** (tag `anchor-1.0.0`) — Version initiale : ajout d'une ancre à un lien Page Webflow via `wu-anchor`, conservation des query strings, remplacement d'une ancre existante, lien vide / `#` → page courante, origine conservée pour les liens externes, `mailto:` / `tel:` / `javascript:` ignorés, idempotence via `wu-anchor-applied`, expose `init()` sur `window.WU.anchor`.
