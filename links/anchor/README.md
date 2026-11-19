@@ -49,8 +49,12 @@ En prod, préfère un tag figé (`@v1.x.x`) à `@main`.
 | `/services#faq` | `tarifs` | `/services#tarifs` (ancre remplacée) |
 | `#` ou vide | `tarifs` | `/page-courante#tarifs` |
 | `https://autre-site.com/page` | `tarifs` | `https://autre-site.com/page#tarifs` |
-| `mailto:…`, `tel:…` | `tarifs` | ignoré (warning console) |
+| `mailto:…`, `tel:…` | `tarifs` | ignoré (un seul warning console) |
+| `/services` | *(vide)* | ignoré silencieusement |
 
+- **Valeur vide = ignorée sans bruit** : un composant partagé (ex. Clickable
+  avec un champ Anchor vide) écrit `wu-anchor=""` sur chaque lien. C'est le cas
+  normal : aucun warning, aucun traitement.
 - **Idempotent** : `wu-anchor-applied` évite tout double traitement, même si le
   script est chargé plusieurs fois ou si `init()` est rappelé.
 - **Liens internes** : le `href` reste relatif (`/page#id`), comme Webflow le génère.
