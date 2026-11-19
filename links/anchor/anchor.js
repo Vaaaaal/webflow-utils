@@ -34,7 +34,10 @@
   }
 
   function init() {
-    const links = document.querySelectorAll(`a[${ATTR_TARGET}]`);
+    // Les valeurs vides sont exclues d'office : un composant partagé (ex. un
+    // Clickable dont le champ Anchor n'est pas rempli) écrit wu-anchor="" sur
+    // chaque lien — c'est le cas normal, pas une erreur.
+    const links = document.querySelectorAll(`a[${ATTR_TARGET}]:not([${ATTR_TARGET}=""])`);
     if (!links.length) return;
 
     links.forEach(processLink);
@@ -44,10 +47,7 @@
     if (a.hasAttribute(ATTR_APPLIED)) return;
 
     const id = (a.getAttribute(ATTR_TARGET) || '').trim().replace(/^#/, '');
-    if (!id) {
-      warn('valeur vide sur', a);
-      return;
-    }
+    if (!id) return; // valeur blanche (espaces / « # » seul) : ignorée sans bruit
 
     // href absent ou « # » seul (lien vide Webflow) → page courante.
     const rawHref = (a.getAttribute('href') || '').trim();
@@ -58,11 +58,13 @@
       url = new URL(base, location.href);
     } catch (e) {
       warn('href invalide:', rawHref, a);
+      a.setAttribute(ATTR_APPLIED, ''); // évite de re-signaler à chaque init()
       return;
     }
 
     if (url.protocol !== 'http:' && url.protocol !== 'https:') {
       warn('protocole non supporté (' + url.protocol + ') — lien ignoré.', a);
+      a.setAttribute(ATTR_APPLIED, ''); // évite de re-signaler à chaque init()
       return;
     }
 
