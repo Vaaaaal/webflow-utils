@@ -42,6 +42,7 @@ Extensions et helpers pour [Finsweet Attributes](https://finsweet.com/attributes
 |---|---|---|
 | [`links/obfuscate`](./links/obfuscate) | Obfusque des liens (URL, email, tél.) en gardant la destination hors du HTML (Base64, décodage au runtime) : contrôle du maillage SEO renforcé + protection anti-spam. | [README](./links/obfuscate/README.md) |
 | [`links/obfuscate-onclick`](./links/obfuscate-onclick) | Obfuscation SEO simplifiée (technique onclick, URL en clair) posable sur n'importe quel élément — empêche la transmission de jus vers les pages ciblées. | [README](./links/obfuscate-onclick/README.md) |
+| [`links/anchor`](./links/anchor) | Ajoute une ancre (`#id`) à un lien de page Webflow via `wu-anchor`, pour viser une section d'une autre page tout en gardant un lien Page natif. | [README](./links/anchor/README.md) |
 
 ### Animation
 
@@ -115,6 +116,10 @@ webflow-utils/
 │       ├── sort-direction.js
 │       └── README.md
 ├── links/                          ← catégorie : manipulation de liens
+│   ├── README.md                   ← index de la catégorie (3+ modules)
+│   ├── anchor/
+│   │   ├── anchor.js
+│   │   └── README.md
 │   ├── obfuscate/
 │   │   ├── obfuscate.js
 │   │   └── README.md
