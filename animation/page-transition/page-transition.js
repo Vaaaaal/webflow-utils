@@ -152,6 +152,13 @@
     html.classList.remove(CLASS_PENDING);
   }
 
+  // Libère les apparitions wu-animate retenues par le snippet <head>
+  // (wu-animate-applied="hold") et relance animate.js. Sans snippet ou
+  // sans éléments retenus, ne fait rien. Idempotent.
+  function releaseAnimate() {
+    if (typeof window.WU._transitionRelease === 'function') window.WU._transitionRelease();
+  }
+
   function dispatch(name, detail) {
     document.dispatchEvent(new CustomEvent(name, { detail: detail || {} }));
   }
@@ -159,6 +166,7 @@
   if (typeof window.gsap === 'undefined') {
     console.warn('[wu-transition] GSAP introuvable — transitions désactivées.');
     release();
+    releaseAnimate();
     resolveReady();
     return;
   }
@@ -352,6 +360,9 @@
 
     const delay = state.options.enterDelay;
     const tl = gsap.timeline({ paused: true, onComplete: finishEnter });
+    // Les apparitions wu-animate démarrent quand l'overlay commence à se
+    // retirer (comme pour un loader), pas sous l'overlay.
+    tl.call(releaseAnimate, null, delay);
     tl.to(overlay, Object.assign({ duration: preset.duration, ease: preset.ease }, preset.enter.to), delay);
     if (page && preset.page && preset.page.enter) {
       tl.from(page, Object.assign({
@@ -376,6 +387,7 @@
     });
     html.classList.remove(CLASS_ENTERING);
     state.transitioning = false;
+    releaseAnimate(); // filet de sécurité si la timeline a été modifiée
     dispatch('wu:transition:enter-complete', { overlay: state.overlay, page: state.page });
     resolveReady();
   }
@@ -455,6 +467,7 @@
 
     if (!state.overlay) {
       release();
+      releaseAnimate();
       resolveReady();
       return;
     }
@@ -473,6 +486,7 @@
       whenPageReady(() => playEnter(preset));
     } else {
       release();
+      releaseAnimate();
       // Sécurité si le snippet <head> n'est pas là : l'overlay ne doit
       // jamais rester visible par-dessus la page au repos.
       if (!state.transitioning) {
