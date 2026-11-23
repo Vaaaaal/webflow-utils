@@ -123,7 +123,11 @@ Comment la page d'arrivée sait qu'elle doit arriver couverte : juste avant de n
    - `wu-transition` = `overlay`
    - `wu-transition-preset` = `slide-up` *(optionnel)*
 
-> 💡 Pour qu'il ne gêne pas dans le Designer, passe-le en **visibility: hidden** dans le Style panel. Le module gère la visibilité lui-même sur le site publié. **Ne pas utiliser `display: none`**, sinon il ne peut pas s'afficher.
+> 💡 Pour qu'il ne gêne pas dans le Designer, passe sa **classe** en **Visibility: Hidden** dans le **Style panel** (Effects). Le module gère la visibilité lui-même sur le site publié.
+>
+> ⚠️ **Ne pas utiliser** :
+> - le réglage **Visibility** de l'onglet **Settings (D)** (l'icône œil « Hidden » des conditions de visibilité) : Webflow **retire alors l'élément du HTML publié**, le module ne le trouve pas et aucune transition ne se joue ;
+> - `display: none` sur la classe : l'overlay ne pourrait pas s'afficher.
 
 ### 2. (Optionnel) Marquer le wrapper de contenu
 
@@ -277,7 +281,7 @@ Priorité : attribut `wu-transition-ease` / `wu-transition-duration` > valeur du
 
 1. GSAP est-il chargé **avant** `page-transition.js` ? `window.gsap` doit être défini dans la console.
 2. Le snippet `<head>` est-il bien collé **inline** dans le Head Code ? `WU._transitionHead` doit valoir `true` dans la console.
-3. L'overlay a-t-il `wu-transition="overlay"` et **pas** de `display: none` ?
+3. L'overlay est-il bien présent dans le HTML publié ? `document.querySelector('[wu-transition="overlay"]')` ne doit pas renvoyer `null`. Si c'est le cas, vérifie qu'il n'est pas masqué via **Settings → Visibility** (ce réglage le retire du HTML) et qu'il n'a pas de `display: none`.
 4. L'overlay passe sous la navbar ? Augmente son z-index.
 5. Un lien ne déclenche rien ? Vérifie la liste « Quels liens déclenchent une transition ? » : un autre script annule peut-être déjà le clic.
 6. Le site est-il publié ? Le custom code ne tourne pas en Preview.
