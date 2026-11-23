@@ -58,7 +58,7 @@ Charger GSAP **avant** ce script.
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Vaaaaal/webflow-utils@main/animation/page-transition/page-transition.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Vaaaaal/webflow-utils@page-transition-1.2.1/animation/page-transition/page-transition.js"></script>
 ```
 
 À coller dans **Project Settings → Custom Code → Footer Code** (le module doit tourner sur toutes les pages).
@@ -351,7 +351,7 @@ Pour une interaction IX2 « Page load » qui anime le loader, masquer l'élémen
 
 ## 📄 Changelog
 
-- **v1.2.1** : Fix : le module libérait aussi les `wu-animate` retenus par un loader (valeur `hold`), qui s'animaient alors sous le loader. Il ne libère plus que ses propres éléments, marqués `wu-animate-applied="wu-transition"`. ⚠️ Mettre à jour le snippet `<head>`.
+- **v1.2.1** (tag `page-transition-1.2.1`) : Fix : le module libérait aussi les `wu-animate` retenus par un loader (valeur `hold`), qui s'animaient alors sous le loader. Il ne libère plus que ses propres éléments, marqués `wu-animate-applied="wu-transition"`. ⚠️ Mettre à jour le snippet `<head>`.
 - **v1.2.0** : Les apparitions `wu-animate` sont retenues pendant l'entrée et lancées quand l'overlay commence à se retirer (désactivable avec `wu-transition-hold-animate="false"` sur le snippet `<head>`). Sécurité de 4 s si le script ne charge pas. ⚠️ Mettre à jour le snippet `<head>` déjà collé sur les sites.
 - **v1.1.0** : Signal d'arrivée pour cohabiter avec un loader : classe `wu-transition-arrival` sur `<html>` (posée par le snippet `<head>`, présente toute la vie de la page) et `WU.transition.arrival`. Nouvelle section « Cohabiter avec un loader ». ⚠️ Mettre à jour le snippet `<head>` déjà collé sur les sites pour en profiter.
 - **v1.0.0** : Version initiale. Interception des liens internes, 8 presets (`fade`, `slide-*`, `wipe-*`, `circle`), snippet `<head>` anti-flash avec sécurité de 4 s, gestion du bfcache, prefetch au survol, timelines extensibles via événements, API `WU.transition`, support `prefers-reduced-motion`.
