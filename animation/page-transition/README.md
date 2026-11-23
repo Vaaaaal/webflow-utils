@@ -250,6 +250,25 @@ C'est un Embed et non le Head Code parce que le Designer n'affiche que le CSS de
 
 Pour une vignette plus grande ou plus petite, change `--wu-preview-scale` (par défaut `0.22`).
 
+### Piloter l'aperçu depuis le composant (props Full / Hidden)
+
+Si l'overlay est dans un composant, tu peux changer d'aperçu depuis le panneau du composant au lieu de modifier l'attribut à la main :
+
+1. Dans le composant, créer deux props **Boolean** : **Full** et **Hidden** (désactivées par défaut).
+2. Sur l'overlay, rendre l'attribut `wu-transition-preview` **conditionnel** : valeur `full` quand **Full** est activée, `hidden` quand **Hidden** est activée, et pas d'attribut du tout sinon.
+3. Sur chaque instance, cocher **Full** pour éditer l'overlay en plein écran, **Hidden** pour le masquer dans le canvas, ou rien pour avoir la vignette.
+
+| Full | Hidden | Attribut généré | Dans le Designer |
+|---|---|---|---|
+| ❌ | ❌ | *(aucun)* | vignette en bas à droite |
+| ✅ | ❌ | `wu-transition-preview="full"` | plein écran |
+| ❌ | ✅ | `wu-transition-preview="hidden"` | masqué |
+| ✅ | ✅ | ⚠️ à éviter | dépend de la condition que Webflow applique en dernier |
+
+Comme les props se règlent **par instance**, chaque page peut avoir son propre aperçu (par ex. masqué sur la home où tu travailles beaucoup, vignette ailleurs).
+
+> ℹ️ L'attribut est aussi écrit dans le HTML publié (ex. `wu-transition-preview="hidden"`). C'est sans effet : seul le CSS de l'aperçu, limité au Designer, le lit. Le module l'ignore.
+
 > ℹ️ `wf-design-mode` est une classe observée et utilisée par la communauté Webflow, pas documentée officiellement. Si Webflow la changeait un jour, l'aperçu disparaîtrait simplement, sans effet sur le site publié.
 
 ---
@@ -428,6 +447,7 @@ Pour une interaction IX2 « Page load » qui anime le loader, masquer l'élémen
 
 ## 📄 Changelog
 
+- **Docs** : pilotage de l'aperçu Designer depuis deux props de composant (Full / Hidden).
 - **Docs** : aperçu Designer ([`designer.html`](./designer.html)), un Embed qui réduit l'overlay en vignette dans le canvas, avec l'attribut optionnel `wu-transition-preview` (`full` / `hidden`). Aucun changement du script.
 - **v1.2.1** (tag `page-transition-1.2.1`) : Fix : le module libérait aussi les `wu-animate` retenus par un loader (valeur `hold`), qui s'animaient alors sous le loader. Il ne libère plus que ses propres éléments, marqués `wu-animate-applied="wu-transition"`. ⚠️ Mettre à jour le snippet `<head>`.
 - **v1.2.0** : Les apparitions `wu-animate` sont retenues pendant l'entrée et lancées quand l'overlay commence à se retirer (désactivable avec `wu-transition-hold-animate="false"` sur le snippet `<head>`). Sécurité de 4 s si le script ne charge pas. ⚠️ Mettre à jour le snippet `<head>` déjà collé sur les sites.
