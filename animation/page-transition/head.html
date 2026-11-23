@@ -26,7 +26,7 @@
     WU._transitionRelease = function () {
       if (WU._transitionReleased) return;
       WU._transitionReleased = true;
-      var h = document.querySelectorAll('[wu-animate-applied="hold"]');
+      var h = document.querySelectorAll('[wu-animate-applied="wu-transition"]');
       for (var i = 0; i < h.length; i++) h[i].removeAttribute('wu-animate-applied');
       if (h.length && WU.animate && WU.animate.init) WU.animate.init();
     };
@@ -34,7 +34,7 @@
       document.addEventListener('DOMContentLoaded', function () {
         if (WU._transitionReleased) return;
         var a = document.querySelectorAll('[wu-animate], [wu-animate-group]');
-        for (var i = 0; i < a.length; i++) if (!a[i].hasAttribute('wu-animate-applied')) a[i].setAttribute('wu-animate-applied', 'hold');
+        for (var i = 0; i < a.length; i++) if (!a[i].hasAttribute('wu-animate-applied')) a[i].setAttribute('wu-animate-applied', 'wu-transition');
       }, { once: true });
     }
     if (arrival || first) {

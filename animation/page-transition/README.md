@@ -33,7 +33,7 @@ Il faut **deux morceaux** : un snippet dans le `<head>` et le script en footer.
     WU._transitionRelease = function () {
       if (WU._transitionReleased) return;
       WU._transitionReleased = true;
-      var h = document.querySelectorAll('[wu-animate-applied="hold"]');
+      var h = document.querySelectorAll('[wu-animate-applied="wu-transition"]');
       for (var i = 0; i < h.length; i++) h[i].removeAttribute('wu-animate-applied');
       if (h.length && WU.animate && WU.animate.init) WU.animate.init();
     };
@@ -41,7 +41,7 @@ Il faut **deux morceaux** : un snippet dans le `<head>` et le script en footer.
       document.addEventListener('DOMContentLoaded', function () {
         if (WU._transitionReleased) return;
         var a = document.querySelectorAll('[wu-animate], [wu-animate-group]');
-        for (var i = 0; i < a.length; i++) if (!a[i].hasAttribute('wu-animate-applied')) a[i].setAttribute('wu-animate-applied', 'hold');
+        for (var i = 0; i < a.length; i++) if (!a[i].hasAttribute('wu-animate-applied')) a[i].setAttribute('wu-animate-applied', 'wu-transition');
       }, { once: true });
     }
     if (arrival || first) {
@@ -315,14 +315,14 @@ Pour une interaction IX2 « Page load » qui anime le loader, masquer l'élémen
 
 - **Loader « une fois par session »** (mémorisé dans `sessionStorage`) : il cohabite déjà dans la plupart des cas, puisqu'une transition n'arrive jamais sur la toute première page de la session. Le signal reste utile pour les cas limites (loader forcé via un paramètre d'URL, nouvel onglet qui hérite de la session…).
 - **`wu-transition-first-load` + loader** : n'active pas les deux. Les deux couvriraient la première page ; garde le loader et laisse `wu-transition-first-load` de côté.
-- **Loader qui retient lui aussi les `wu-animate`** (même principe `wu-animate-applied="hold"`) : aucun conflit tant que le loader ne joue pas à l'arrivée d'une transition, ce que le signal ci-dessus garantit.
+- **Loader qui retient lui aussi les `wu-animate`** (même principe, avec une autre valeur, par ex. `wu-animate-applied="hold"`) : aucun conflit. Le module ne libère que les éléments qu'il a lui-même marqués (`wu-animate-applied="wu-transition"`) et ne touche jamais à ceux du loader.
 - **Clic pendant le loader** : la sortie se joue normalement par-dessus. Donne à l'overlay un z-index supérieur ou égal à celui du loader.
 
 ---
 
 ## 🤝 Avec les autres modules
 
-- **`animation/animate`** : rien à faire, c'est automatique. Quand une page arrive couverte, les apparitions `wu-animate` (hero, éléments déjà visibles) sont **retenues** puis lancées quand l'overlay commence à se retirer, au lieu de se jouer en dessous sans qu'on les voie. Concrètement, le snippet `<head>` marque les éléments `wu-animate-applied="hold"` avant qu'`animate.js` ne s'initialise, puis le module les libère et appelle `WU.animate.init()` au début de l'entrée (après `wu-transition-enter-delay`). Sécurités : si `page-transition.js` ne charge pas, tout est libéré au bout de 4 s ; sur une arrivée directe, rien n'est retenu. Pour désactiver : `wu-transition-hold-animate="false"` sur la balise `<script>` du snippet `<head>`. Le CSS anti-flash d'`animate` (`[wu-animate] { opacity: 0 }` dans le `<head>`) reste recommandé : c'est lui qui garde les éléments masqués pendant qu'ils sont retenus.
+- **`animation/animate`** : rien à faire, c'est automatique. Quand une page arrive couverte, les apparitions `wu-animate` (hero, éléments déjà visibles) sont **retenues** puis lancées quand l'overlay commence à se retirer, au lieu de se jouer en dessous sans qu'on les voie. Concrètement, le snippet `<head>` marque les éléments `wu-animate-applied="wu-transition"` avant qu'`animate.js` ne s'initialise, puis le module les libère et appelle `WU.animate.init()` au début de l'entrée (après `wu-transition-enter-delay`). Sécurités : si `page-transition.js` ne charge pas, tout est libéré au bout de 4 s ; sur une arrivée directe, rien n'est retenu. Pour désactiver : `wu-transition-hold-animate="false"` sur la balise `<script>` du snippet `<head>`. Le CSS anti-flash d'`animate` (`[wu-animate] { opacity: 0 }` dans le `<head>`) reste recommandé : c'est lui qui garde les éléments masqués pendant qu'ils sont retenus.
 - **Interactions IX2 « Page load »** : elles démarrent sous l'overlay, le module ne peut pas les retenir. Utilise plutôt `wu-animate`, ou ajoute un délai à l'interaction.
 - **`links/anchor`** : compatible. Le lien pointe vers une autre page avec une ancre : la transition se joue, puis le navigateur scrolle vers l'ancre.
 - **`links/obfuscate-onclick`** : ces éléments naviguent via `window.location` et ne passent donc pas par la transition. Pour l'avoir, ils peuvent appeler `WU.transition.go(url)`.
@@ -351,6 +351,7 @@ Pour une interaction IX2 « Page load » qui anime le loader, masquer l'élémen
 
 ## 📄 Changelog
 
+- **v1.2.1** : Fix : le module libérait aussi les `wu-animate` retenus par un loader (valeur `hold`), qui s'animaient alors sous le loader. Il ne libère plus que ses propres éléments, marqués `wu-animate-applied="wu-transition"`. ⚠️ Mettre à jour le snippet `<head>`.
 - **v1.2.0** : Les apparitions `wu-animate` sont retenues pendant l'entrée et lancées quand l'overlay commence à se retirer (désactivable avec `wu-transition-hold-animate="false"` sur le snippet `<head>`). Sécurité de 4 s si le script ne charge pas. ⚠️ Mettre à jour le snippet `<head>` déjà collé sur les sites.
 - **v1.1.0** : Signal d'arrivée pour cohabiter avec un loader : classe `wu-transition-arrival` sur `<html>` (posée par le snippet `<head>`, présente toute la vie de la page) et `WU.transition.arrival`. Nouvelle section « Cohabiter avec un loader ». ⚠️ Mettre à jour le snippet `<head>` déjà collé sur les sites pour en profiter.
 - **v1.0.0** : Version initiale. Interception des liens internes, 8 presets (`fade`, `slide-*`, `wipe-*`, `circle`), snippet `<head>` anti-flash avec sécurité de 4 s, gestion du bfcache, prefetch au survol, timelines extensibles via événements, API `WU.transition`, support `prefers-reduced-motion`.

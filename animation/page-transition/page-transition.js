@@ -153,8 +153,10 @@
   }
 
   // Libère les apparitions wu-animate retenues par le snippet <head>
-  // (wu-animate-applied="hold") et relance animate.js. Sans snippet ou
-  // sans éléments retenus, ne fait rien. Idempotent.
+  // (wu-animate-applied="wu-transition" — uniquement celles-là : un loader
+  // qui retient ses propres éléments avec une autre valeur n'est jamais
+  // touché) et relance animate.js. Sans éléments retenus, ne fait rien.
+  // Idempotent.
   function releaseAnimate() {
     if (typeof window.WU._transitionRelease === 'function') window.WU._transitionRelease();
   }
