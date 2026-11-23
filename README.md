@@ -49,6 +49,7 @@ Extensions et helpers pour [Finsweet Attributes](https://finsweet.com/attributes
 | Module | Description | Doc |
 |---|---|---|
 | [`animation/animate`](./animation/animate) | Anime l'apparition des éléments au scroll (fade, scale, slide) via des custom attributes, avec support des groupes en stagger — repose sur GSAP + ScrollTrigger. | [README](./animation/animate/README.md) |
+| [`animation/page-transition`](./animation/page-transition) | Transitions de page sans Barba : intercepte les liens internes et joue une sortie/entrée GSAP (fade, slide, wipe, circle) autour d'un vrai chargement de page — IX2, Finsweet et les autres scripts se relancent tout seuls. | [README](./animation/page-transition/README.md) |
 
 > D'autres catégories et modules seront ajoutés au fil des besoins.
 
@@ -107,8 +108,9 @@ webflow-utils/
 ├── LICENSE                         ← MIT
 ├── ai/                             ← catégorie : outillage IA / GEO
 │   └── ask-ai/
-├── animation/                      ← catégorie : animations GSAP au scroll
-│   └── animate/
+├── animation/                      ← catégorie : animations GSAP (scroll, transitions de page)
+│   ├── animate/
+│   └── page-transition/
 ├── cms/                            ← catégorie : manipulation CMS
 │   └── combine/
 ├── finsweet/                       ← catégorie : extensions Finsweet Attributes

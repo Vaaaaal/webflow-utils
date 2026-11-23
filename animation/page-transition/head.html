@@ -1,0 +1,26 @@
+<!--
+  webflow-utils / animation/page-transition — snippet <head>
+  À coller tel quel dans Project Settings → Custom Code → Head Code.
+  Doit rester INLINE (pas de <script src>) : il doit s'exécuter avant le
+  premier rendu pour que la page d'arrivée soit couverte sans flash.
+  Option : ajouter wu-transition-first-load sur la balise <script> pour
+  couvrir aussi les arrivées directes (URL tapée, lien externe, refresh).
+-->
+<style>
+  [wu-transition="overlay"] { position: fixed; inset: 0; visibility: hidden; pointer-events: none; }
+  html.wu-transition-pending [wu-transition="overlay"] { visibility: visible; pointer-events: auto; }
+</style>
+<script>
+  (function () {
+    var d = document.documentElement, s = document.currentScript, k = 'wu-transition', t = 0;
+    window.WU = window.WU || {};
+    WU._transitionHead = true;
+    try { t = +sessionStorage.getItem(k) || 0; sessionStorage.removeItem(k); } catch (e) {}
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var first = s && s.hasAttribute('wu-transition-first-load') && s.getAttribute('wu-transition-first-load') !== 'false';
+    if (Date.now() - t < 10000 || first) {
+      d.classList.add('wu-transition-pending');
+      WU._transitionFallback = setTimeout(function () { d.classList.remove('wu-transition-pending'); }, 4000);
+    }
+  })();
+</script>
