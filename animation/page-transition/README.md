@@ -141,19 +141,23 @@ Comment la page d'arrivée sait qu'elle doit arriver couverte : juste avant de n
    - `wu-transition` = `overlay`
    - `wu-transition-preset` = `slide-up` *(optionnel)*
 
-> 💡 Pour qu'il ne gêne pas dans le Designer, passe sa **classe** en **Visibility: Hidden** dans le **Style panel** (Effects). Le module gère la visibilité lui-même sur le site publié.
+> 💡 Pour qu'il ne te cache pas la page dans le Designer, ajoute l'**aperçu Designer** (voir [la section dédiée](#-aperçu-dans-le-designer)) : l'overlay devient une petite vignette dans un coin du canvas. Alternative sans code : passer sa **classe** en **Visibility: Hidden** dans le **Style panel** (Effects) ; le module gère la visibilité lui-même sur le site publié.
 >
 > ⚠️ **Ne pas utiliser** :
 > - le réglage **Visibility** de l'onglet **Settings (D)** (l'icône œil « Hidden » des conditions de visibilité) : Webflow **retire alors l'élément du HTML publié**, le module ne le trouve pas et aucune transition ne se joue ;
 > - `display: none` sur la classe : l'overlay ne pourrait pas s'afficher.
 
-### 2. (Optionnel) Marquer le wrapper de contenu
+### 2. (Recommandé) Ajouter l'aperçu Designer
+
+Voir [Aperçu dans le Designer](#-aperçu-dans-le-designer) : un Embed à glisser dans l'overlay.
+
+### 3. (Optionnel) Marquer le wrapper de contenu
 
 Sur le wrapper principal de la page (ex. `main` ou `.page-wrapper`) :
 
 - `wu-transition` = `page`
 
-### 3. Coller les deux snippets, publier et tester
+### 4. Coller les deux snippets, publier et tester
 
 Le custom code ne s'exécute que sur le site **publié** (pas en Preview, ni dans le Designer ou l'Editor).
 
@@ -174,6 +178,79 @@ Le custom code ne s'exécute que sur le site **publié** (pas en Preview, ni dan
   <a href="/brochure.pdf" wu-transition-ignore>PDF</a> <!-- exclu manuellement -->
 </main>
 ```
+
+---
+
+## 🎨 Aperçu dans le Designer
+
+Sur le site publié, l'overlay est invisible au repos. Mais dans le Designer le module ne tourne pas : l'overlay apparaît tel que stylé, c'est-à-dire un bloc plein écran qui cache toute la page. Ce CSS le transforme, **dans le Designer uniquement**, en vignette en bas à droite du canvas : l'écran de transition entier réduit, aux bonnes proportions, entouré de pointillés et avec une étiquette « Page transition · overlay ».
+
+**Mise en place**
+
+1. Dans le composant, glisser un élément **Embed** **à l'intérieur** de l'overlay (`wu-transition="overlay"`).
+2. Y coller le contenu de [`designer.html`](./designer.html) (aussi ci-dessous).
+
+C'est un Embed et non le Head Code parce que le Designer n'affiche que le CSS des Embeds. Tout est préfixé par `html.wf-design-mode`, une classe que Webflow pose sur `<html>` uniquement dans le Designer : **aucun effet sur le site publié**. Placé dans le composant, l'Embed suit l'overlay sur toutes les pages.
+
+```html
+<style>
+  html.wf-design-mode [wu-transition="overlay"] {
+    --wu-preview-scale: 0.22;
+    position: fixed;
+    inset: auto 0 0 auto;
+    width: 100vw;
+    height: 100vh;
+    visibility: visible;
+    opacity: 1;
+    clip-path: none;
+    transform: translate(-1.5rem, -1.5rem) scale(var(--wu-preview-scale));
+    transform-origin: 100% 100%;
+    outline: calc(2px / var(--wu-preview-scale)) dashed #4353ff;
+    box-shadow: 0 0 0 calc(1px / var(--wu-preview-scale)) rgba(0, 0, 0, 0.08),
+      0 calc(12px / var(--wu-preview-scale)) calc(32px / var(--wu-preview-scale)) rgba(0, 0, 0, 0.25);
+    border-radius: calc(8px / var(--wu-preview-scale));
+    overflow: hidden;
+    z-index: 2147483000;
+  }
+  html.wf-design-mode [wu-transition="overlay"]::before {
+    content: "Page transition · overlay";
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2147483001;
+    padding: calc(4px / var(--wu-preview-scale)) calc(8px / var(--wu-preview-scale));
+    font: 600 calc(11px / var(--wu-preview-scale)) / 1.2 system-ui, -apple-system, sans-serif;
+    letter-spacing: 0.02em;
+    color: #fff;
+    background: #4353ff;
+    border-bottom-right-radius: calc(6px / var(--wu-preview-scale));
+    pointer-events: none;
+  }
+  html.wf-design-mode [wu-transition="overlay"][wu-transition-preview="full"] {
+    --wu-preview-scale: 1;
+    inset: 0;
+    transform: none;
+    border-radius: 0;
+    box-shadow: none;
+    outline-offset: -2px;
+  }
+  html.wf-design-mode [wu-transition="overlay"][wu-transition-preview="hidden"] {
+    display: none;
+  }
+</style>
+```
+
+**Changer d'aperçu** : attribut optionnel `wu-transition-preview` sur l'overlay.
+
+| Valeur | Dans le Designer |
+|---|---|
+| *(absent)* | vignette en bas à droite |
+| `full` | plein écran, pour éditer le contenu de l'overlay (logo, texte…) à taille réelle |
+| `hidden` | masqué |
+
+Pour une vignette plus grande ou plus petite, change `--wu-preview-scale` (par défaut `0.22`).
+
+> ℹ️ `wf-design-mode` est une classe observée et utilisée par la communauté Webflow, pas documentée officiellement. Si Webflow la changeait un jour, l'aperçu disparaîtrait simplement, sans effet sur le site publié.
 
 ---
 
@@ -351,6 +428,7 @@ Pour une interaction IX2 « Page load » qui anime le loader, masquer l'élémen
 
 ## 📄 Changelog
 
+- **Docs** : aperçu Designer ([`designer.html`](./designer.html)), un Embed qui réduit l'overlay en vignette dans le canvas, avec l'attribut optionnel `wu-transition-preview` (`full` / `hidden`). Aucun changement du script.
 - **v1.2.1** (tag `page-transition-1.2.1`) : Fix : le module libérait aussi les `wu-animate` retenus par un loader (valeur `hold`), qui s'animaient alors sous le loader. Il ne libère plus que ses propres éléments, marqués `wu-animate-applied="wu-transition"`. ⚠️ Mettre à jour le snippet `<head>`.
 - **v1.2.0** : Les apparitions `wu-animate` sont retenues pendant l'entrée et lancées quand l'overlay commence à se retirer (désactivable avec `wu-transition-hold-animate="false"` sur le snippet `<head>`). Sécurité de 4 s si le script ne charge pas. ⚠️ Mettre à jour le snippet `<head>` déjà collé sur les sites.
 - **v1.1.0** : Signal d'arrivée pour cohabiter avec un loader : classe `wu-transition-arrival` sur `<html>` (posée par le snippet `<head>`, présente toute la vie de la page) et `WU.transition.arrival`. Nouvelle section « Cohabiter avec un loader ». ⚠️ Mettre à jour le snippet `<head>` déjà collé sur les sites pour en profiter.
