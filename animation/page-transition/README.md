@@ -26,8 +26,10 @@ Il faut **deux morceaux** : un snippet dans le `<head>` et le script en footer.
     WU._transitionHead = true;
     try { t = +sessionStorage.getItem(k) || 0; sessionStorage.removeItem(k); } catch (e) {}
     if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var arrival = Date.now() - t < 10000;
     var first = s && s.hasAttribute('wu-transition-first-load') && s.getAttribute('wu-transition-first-load') !== 'false';
-    if (Date.now() - t < 10000 || first) {
+    if (arrival) { d.classList.add('wu-transition-arrival'); WU._transitionArrival = true; }
+    if (arrival || first) {
       d.classList.add('wu-transition-pending');
       WU._transitionFallback = setTimeout(function () { d.classList.remove('wu-transition-pending'); }, 4000);
     }
@@ -179,6 +181,7 @@ Un clic déclenche la transition seulement si **toutes** ces conditions sont rem
 WU.transition.go('/contact');   // navigation avec transition (ex. depuis un bouton, un formulaire)
 WU.transition.ready;            // Promise résolue quand l'entrée est terminée (ou immédiatement s'il n'y en a pas)
 WU.transition.isTransitioning;  // true pendant une sortie ou une entrée
+WU.transition.arrival;          // true si cette page a été atteinte via une transition
 WU.transition.init();           // relit l'overlay et ses attributs (utile si tu le modifies dynamiquement)
 WU.transition.presets;          // presets, extensibles (voir plus bas)
 ```
@@ -211,6 +214,7 @@ WU.transition.presets;          // presets, extensibles (voir plus bas)
 | Classe | Présente |
 |---|---|
 | `wu-transition-pending` | entre le premier rendu et la prise en main du script (posée par le snippet `<head>`) |
+| `wu-transition-arrival` | **toute la vie de la page**, si elle a été atteinte via une transition (posée par le snippet `<head>`, avant le premier rendu) |
 | `wu-transition-leaving` | pendant la sortie |
 | `wu-transition-entering` | pendant l'entrée |
 
@@ -259,6 +263,45 @@ Priorité : attribut `wu-transition-ease` / `wu-transition-duration` > valeur du
 
 ---
 
+## ⏳ Cohabiter avec un loader
+
+Un loader (écran de chargement au premier affichage) et une transition couvrent tous les deux la page à l'arrivée. Sans précaution, on peut voir les deux à la suite : l'overlay de transition se retire, puis le loader se joue.
+
+La règle simple : **quand on arrive via une transition, le loader ne joue pas**. L'overlay fait déjà office d'écran de chargement. Le module ne touche jamais au loader lui-même : c'est le loader qui lit un signal, ce qui reste optionnel et n'a aucun effet sur les sites sans loader.
+
+Le signal est la classe **`wu-transition-arrival`** sur `<html>`. Elle est posée par le snippet `<head>`, donc **avant** que le moindre script du `<body>` ne s'exécute (même un script inline placé en tout premier dans la page), et elle reste en place tant qu'on est sur la page.
+
+### Loader en JavaScript
+
+Au début du script du loader, avant qu'il ne s'affiche :
+
+```js
+if (document.documentElement.classList.contains('wu-transition-arrival')) {
+  loaderElement.remove(); // ou : ne rien lancer
+  return;
+}
+```
+
+### Loader en CSS / IX2 (sans code)
+
+Dans le Head Code, juste après le snippet du module :
+
+```html
+<style>
+  html.wu-transition-arrival .loader_wrap { display: none !important; }
+</style>
+```
+
+Pour une interaction IX2 « Page load » qui anime le loader, masquer l'élément suffit : l'animation se joue sur un élément invisible.
+
+### Bon à savoir
+
+- **Loader « une fois par session »** (mémorisé dans `sessionStorage`) : il cohabite déjà dans la plupart des cas, puisqu'une transition n'arrive jamais sur la toute première page de la session. Le signal reste utile pour les cas limites (loader forcé via un paramètre d'URL, nouvel onglet qui hérite de la session…).
+- **`wu-transition-first-load` + loader** : n'active pas les deux. Les deux couvriraient la première page ; garde le loader et laisse `wu-transition-first-load` de côté.
+- **Clic pendant le loader** : la sortie se joue normalement par-dessus. Donne à l'overlay un z-index supérieur ou égal à celui du loader.
+
+---
+
 ## 🤝 Avec les autres modules
 
 - **`animation/animate`** : les éléments déjà visibles au chargement (hero) s'animent pendant que l'overlay couvre encore la page, donc l'animation peut passer inaperçue. Pour des animations très courtes en haut de page, ajoute un `wu-animate-delay` équivalent à la durée de l'entrée. Faire attendre `WU.transition.ready` à `animate` serait une petite évolution d'`animate.js` à prévoir.
@@ -290,4 +333,5 @@ Priorité : attribut `wu-transition-ease` / `wu-transition-duration` > valeur du
 
 ## 📄 Changelog
 
+- **v1.1.0** : Signal d'arrivée pour cohabiter avec un loader : classe `wu-transition-arrival` sur `<html>` (posée par le snippet `<head>`, présente toute la vie de la page) et `WU.transition.arrival`. Nouvelle section « Cohabiter avec un loader ». ⚠️ Mettre à jour le snippet `<head>` déjà collé sur les sites pour en profiter.
 - **v1.0.0** : Version initiale. Interception des liens internes, 8 presets (`fade`, `slide-*`, `wipe-*`, `circle`), snippet `<head>` anti-flash avec sécurité de 4 s, gestion du bfcache, prefetch au survol, timelines extensibles via événements, API `WU.transition`, support `prefers-reduced-motion`.

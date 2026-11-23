@@ -115,7 +115,11 @@
     go: publicGo,
     presets: PRESETS,
     ready,
-    get isTransitioning() { return state.transitioning; }
+    get isTransitioning() { return state.transitioning; },
+    // true si cette page a été atteinte via une transition (lu depuis le
+    // snippet <head>). Pour un loader inline, qui s'exécute avant ce
+    // script, lire plutôt la classe html.wu-transition-arrival.
+    get arrival() { return !!window.WU._transitionArrival; }
   };
 
   const state = {

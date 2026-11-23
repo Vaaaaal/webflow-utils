@@ -17,8 +17,10 @@
     WU._transitionHead = true;
     try { t = +sessionStorage.getItem(k) || 0; sessionStorage.removeItem(k); } catch (e) {}
     if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var arrival = Date.now() - t < 10000;
     var first = s && s.hasAttribute('wu-transition-first-load') && s.getAttribute('wu-transition-first-load') !== 'false';
-    if (Date.now() - t < 10000 || first) {
+    if (arrival) { d.classList.add('wu-transition-arrival'); WU._transitionArrival = true; }
+    if (arrival || first) {
       d.classList.add('wu-transition-pending');
       WU._transitionFallback = setTimeout(function () { d.classList.remove('wu-transition-pending'); }, 4000);
     }
