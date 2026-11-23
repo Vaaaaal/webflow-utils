@@ -1,0 +1,58 @@
+<!--
+  webflow-utils / animation/page-transition — aperçu dans le Designer
+  À coller dans un élément Embed placé DANS l'overlay (wu-transition="overlay"),
+  idéalement dans le composant, pour qu'il le suive sur toutes les pages.
+  Le CSS du Head Code ne s'affiche pas dans le Designer : seul un Embed le fait.
+  Tout est préfixé par html.wf-design-mode → aucun effet sur le site publié.
+
+  Par défaut : l'overlay devient une vignette en bas à droite du canvas, aux
+  bonnes proportions (réduction de l'écran entier), avec une étiquette.
+  Attribut optionnel sur l'overlay, pour changer d'aperçu :
+    wu-transition-preview="full"    → plein écran (pour éditer son contenu)
+    wu-transition-preview="hidden"  → masqué dans le canvas
+-->
+<style>
+  html.wf-design-mode [wu-transition="overlay"] {
+    --wu-preview-scale: 0.22;
+    position: fixed;
+    inset: auto 0 0 auto;
+    width: 100vw;
+    height: 100vh;
+    visibility: visible;
+    opacity: 1;
+    clip-path: none;
+    transform: translate(-1.5rem, -1.5rem) scale(var(--wu-preview-scale));
+    transform-origin: 100% 100%;
+    outline: calc(2px / var(--wu-preview-scale)) dashed #4353ff;
+    box-shadow: 0 0 0 calc(1px / var(--wu-preview-scale)) rgba(0, 0, 0, 0.08),
+      0 calc(12px / var(--wu-preview-scale)) calc(32px / var(--wu-preview-scale)) rgba(0, 0, 0, 0.25);
+    border-radius: calc(8px / var(--wu-preview-scale));
+    overflow: hidden;
+    z-index: 2147483000;
+  }
+  html.wf-design-mode [wu-transition="overlay"]::before {
+    content: "Page transition · overlay";
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2147483001;
+    padding: calc(4px / var(--wu-preview-scale)) calc(8px / var(--wu-preview-scale));
+    font: 600 calc(11px / var(--wu-preview-scale)) / 1.2 system-ui, -apple-system, sans-serif;
+    letter-spacing: 0.02em;
+    color: #fff;
+    background: #4353ff;
+    border-bottom-right-radius: calc(6px / var(--wu-preview-scale));
+    pointer-events: none;
+  }
+  html.wf-design-mode [wu-transition="overlay"][wu-transition-preview="full"] {
+    --wu-preview-scale: 1;
+    inset: 0;
+    transform: none;
+    border-radius: 0;
+    box-shadow: none;
+    outline-offset: -2px;
+  }
+  html.wf-design-mode [wu-transition="overlay"][wu-transition-preview="hidden"] {
+    display: none;
+  }
+</style>
